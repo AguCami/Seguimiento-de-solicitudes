@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
 type Sector = { id: string; name: string };
@@ -9,6 +10,10 @@ type Request = {
   sectorId: string; priority: string;
   startDate: string | null; endDate: string | null;
 };
+
+const inputCls = "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50";
+const labelCls = "block text-xs font-semibold mb-1";
+const labelStyle = { color: "rgba(20,20,60,0.7)" } as React.CSSProperties;
 
 export function EditRequestModal({ request, onClose }: { request: Request; onClose: () => void }) {
   const [title, setTitle] = useState(request.title);
@@ -20,10 +25,14 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     fetch("/api/sectors").then((r) => r.json()).then(setSectors);
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
   }, []);
 
   async function handleSave(e: React.FormEvent) {
@@ -40,41 +49,53 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
     else { setError("Error al guardar los cambios"); }
   }
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center z-[100] p-4"
-      style={{ background: "rgba(10,10,30,0.55)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+  const modal = (
+    <div
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(10,10,40,0.6)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "16px",
+      }}
+    >
       <div style={{
-        background: "rgba(255,255,255,0.92)",
-        border: "1px solid rgba(200,200,240,0.6)",
-        boxShadow: "0 20px 60px rgba(31,38,135,0.35)",
-      }} className="rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div style={{ borderBottom: "1px solid rgba(100,100,180,0.15)" }} className="flex items-center justify-between p-6">
-          <h2 className="text-lg font-bold" style={{ color: "#1a1a3e" }}>Editar solicitud</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl transition">✕</button>
+        background: "#fff",
+        borderRadius: "20px",
+        boxShadow: "0 24px 64px rgba(31,38,135,0.3)",
+        width: "100%",
+        maxWidth: "520px",
+        maxHeight: "90vh",
+        overflowY: "auto",
+        border: "1px solid rgba(200,200,240,0.5)",
+      }}>
+        <div style={{ borderBottom: "1px solid #eef0f8", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h2 style={{ margin: 0, fontSize: "17px", fontWeight: 700, color: "#1a1a3e" }}>Editar solicitud</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#9ca3af", lineHeight: 1 }}>✕</button>
         </div>
-        <form onSubmit={handleSave} className="p-6 space-y-4">
+
+        <form onSubmit={handleSave} style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Título *</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} required
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
+            <label className={labelCls} style={labelStyle}>Título *</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} required className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Descripción *</label>
+            <label className={labelCls} style={labelStyle}>Descripción *</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows={4}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50 resize-none" />
+              className={inputCls + " resize-none"} style={{ display: "block" }} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <div>
-              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Sector</label>
-              <select value={sectorId} onChange={(e) => setSectorId(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50">
+              <label className={labelCls} style={labelStyle}>Sector</label>
+              <select value={sectorId} onChange={(e) => setSectorId(e.target.value)} className={inputCls}>
                 {sectors.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Prioridad</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50">
+              <label className={labelCls} style={labelStyle}>Prioridad</label>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} className={inputCls}>
                 <option value="BAJA">Baja</option>
                 <option value="MEDIA">Media</option>
                 <option value="ALTA">Alta</option>
@@ -82,27 +103,25 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <div>
-              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Fecha de inicio</label>
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
+              <label className={labelCls} style={labelStyle}>Fecha de inicio</label>
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Fecha de fin</label>
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
+              <label className={labelCls} style={labelStyle}>Fecha de fin</label>
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputCls} />
             </div>
           </div>
           {error && (
-            <p className="text-red-600 text-sm px-3 py-2 rounded-xl bg-red-50 border border-red-200">{error}</p>
+            <p style={{ color: "#dc2626", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "12px", padding: "8px 12px", fontSize: "13px", margin: 0 }}>{error}</p>
           )}
-          <div className="flex gap-2 pt-2">
-            <button type="submit" disabled={loading} className="btn-glass-primary flex-1 py-2 text-sm">
+          <div style={{ display: "flex", gap: "8px", paddingTop: "4px" }}>
+            <button type="submit" disabled={loading} className="btn-glass-primary" style={{ flex: 1, padding: "10px", fontSize: "14px" }}>
               {loading ? "Guardando..." : "Guardar cambios"}
             </button>
             <button type="button" onClick={onClose}
-              className="px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
+              style={{ padding: "10px 18px", fontSize: "14px", borderRadius: "12px", border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280", cursor: "pointer" }}>
               Cancelar
             </button>
           </div>
@@ -110,4 +129,7 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
       </div>
     </div>
   );
+
+  if (!mounted) return null;
+  return createPortal(modal, document.body);
 }
