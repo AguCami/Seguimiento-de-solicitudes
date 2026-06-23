@@ -45,16 +45,17 @@ body {
 
 /* Input glass */
 .glass-input {
-  background: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.32) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  color: #1a1a2e !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  color: #0f0f2e !important;
   border-radius: 12px !important;
   transition: all 0.2s ease;
+  font-weight: 500;
 }
 
-.glass-input::placeholder { color: rgba(30, 30, 60, 0.5); }
+.glass-input::placeholder { color: rgba(20, 20, 60, 0.38); }
 
 .glass-input:focus {
   outline: none !important;
