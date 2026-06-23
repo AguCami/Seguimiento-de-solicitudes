@@ -4,16 +4,32 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
 type Sector = { id: string; name: string };
-
 type Request = {
   id: string; title: string; description: string;
   sectorId: string; priority: string;
   startDate: string | null; endDate: string | null;
 };
 
-const inputCls = "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50";
-const labelCls = "block text-xs font-semibold mb-1";
-const labelStyle = { color: "rgba(20,20,60,0.7)" } as React.CSSProperties;
+const fieldStyle: React.CSSProperties = {
+  display: "flex", flexDirection: "column", gap: "6px",
+};
+const labelStyle: React.CSSProperties = {
+  fontSize: "11px", fontWeight: 600, letterSpacing: "0.04em",
+  color: "rgba(255,255,255,0.65)", textTransform: "uppercase",
+};
+const inputStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.15)",
+  border: "1px solid rgba(255,255,255,0.3)",
+  borderRadius: "12px",
+  padding: "10px 14px",
+  fontSize: "14px",
+  color: "white",
+  outline: "none",
+  width: "100%",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
+  boxSizing: "border-box",
+};
 
 export function EditRequestModal({ request, onClose }: { request: Request; onClose: () => void }) {
   const [title, setTitle] = useState(request.title);
@@ -53,78 +69,111 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
     <div
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       style={{
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        width: "100vw", height: "100vh",
-        zIndex: 9999,
-        background: "rgba(10,10,40,0.65)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        width: "100vw", height: "100vh", zIndex: 9999,
+        background: "rgba(10,5,30,0.7)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: "16px",
       }}
     >
       <div style={{
-        background: "#fff",
-        borderRadius: "20px",
-        boxShadow: "0 24px 64px rgba(31,38,135,0.3)",
-        width: "100%",
-        maxWidth: "520px",
-        maxHeight: "90vh",
-        overflowY: "auto",
-        border: "1px solid rgba(200,200,240,0.5)",
+        background: "rgba(255,255,255,0.12)",
+        backdropFilter: "blur(40px) saturate(200%)",
+        WebkitBackdropFilter: "blur(40px) saturate(200%)",
+        border: "1px solid rgba(255,255,255,0.25)",
+        borderRadius: "24px",
+        boxShadow: "0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)",
+        width: "100%", maxWidth: "520px",
+        maxHeight: "90vh", overflowY: "auto",
       }}>
-        <div style={{ borderBottom: "1px solid #eef0f8", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h2 style={{ margin: 0, fontSize: "17px", fontWeight: 700, color: "#1a1a3e" }}>Editar solicitud</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#9ca3af", lineHeight: 1 }}>✕</button>
+        {/* Header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "20px 24px",
+          borderBottom: "1px solid rgba(255,255,255,0.15)",
+        }}>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "white", letterSpacing: "-0.02em" }}>
+            Editar solicitud
+          </h2>
+          <button onClick={onClose} style={{
+            background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)",
+            borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer",
+            color: "rgba(255,255,255,0.7)", fontSize: "16px", display: "flex",
+            alignItems: "center", justifyContent: "center",
+          }}>✕</button>
         </div>
 
-        <form onSubmit={handleSave} style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div>
-            <label className={labelCls} style={labelStyle}>Título *</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} required className={inputCls} />
+        {/* Form */}
+        <form onSubmit={handleSave} style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "18px" }}>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Título *</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} required style={inputStyle}
+              onFocus={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.6)"; e.target.style.background = "rgba(255,255,255,0.22)"; }}
+              onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.3)"; e.target.style.background = "rgba(255,255,255,0.15)"; }} />
           </div>
-          <div>
-            <label className={labelCls} style={labelStyle}>Descripción *</label>
+
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Descripción *</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows={4}
-              className={inputCls + " resize-none"} style={{ display: "block" }} />
+              style={{ ...inputStyle, resize: "none" }}
+              onFocus={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.6)"; e.target.style.background = "rgba(255,255,255,0.22)"; }}
+              onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.3)"; e.target.style.background = "rgba(255,255,255,0.15)"; }} />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <div>
-              <label className={labelCls} style={labelStyle}>Sector</label>
-              <select value={sectorId} onChange={(e) => setSectorId(e.target.value)} className={inputCls}>
-                {sectors.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+            <div style={fieldStyle}>
+              <label style={labelStyle}>Sector</label>
+              <select value={sectorId} onChange={(e) => setSectorId(e.target.value)} style={inputStyle}>
+                {sectors.map((s) => <option key={s.id} value={s.id} style={{ background: "#3b3ab5", color: "white" }}>{s.name}</option>)}
               </select>
             </div>
-            <div>
-              <label className={labelCls} style={labelStyle}>Prioridad</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)} className={inputCls}>
-                <option value="BAJA">Baja</option>
-                <option value="MEDIA">Media</option>
-                <option value="ALTA">Alta</option>
-                <option value="URGENTE">Urgente</option>
+            <div style={fieldStyle}>
+              <label style={labelStyle}>Prioridad</label>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} style={inputStyle}>
+                {["BAJA","MEDIA","ALTA","URGENTE"].map(p => (
+                  <option key={p} value={p} style={{ background: "#3b3ab5", color: "white" }}>
+                    {p[0] + p.slice(1).toLowerCase()}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <div>
-              <label className={labelCls} style={labelStyle}>Fecha de inicio</label>
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputCls} />
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+            <div style={fieldStyle}>
+              <label style={labelStyle}>Fecha de inicio</label>
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={inputStyle}
+                onFocus={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.6)"; }}
+                onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.3)"; }} />
             </div>
-            <div>
-              <label className={labelCls} style={labelStyle}>Fecha de fin</label>
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputCls} />
+            <div style={fieldStyle}>
+              <label style={labelStyle}>Fecha de fin</label>
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={inputStyle}
+                onFocus={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.6)"; }}
+                onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.3)"; }} />
             </div>
           </div>
+
           {error && (
-            <p style={{ color: "#dc2626", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "12px", padding: "8px 12px", fontSize: "13px", margin: 0 }}>{error}</p>
+            <p style={{
+              color: "#fca5a5", background: "rgba(239,68,68,0.15)",
+              border: "1px solid rgba(239,68,68,0.35)", borderRadius: "12px",
+              padding: "10px 14px", fontSize: "13px", margin: 0,
+            }}>{error}</p>
           )}
-          <div style={{ display: "flex", gap: "8px", paddingTop: "4px" }}>
-            <button type="submit" disabled={loading} className="btn-glass-primary" style={{ flex: 1, padding: "10px", fontSize: "14px" }}>
+
+          <div style={{ display: "flex", gap: "10px", paddingTop: "4px" }}>
+            <button type="submit" disabled={loading} className="btn-glass-primary"
+              style={{ flex: 1, padding: "12px", fontSize: "14px" }}>
               {loading ? "Guardando..." : "Guardar cambios"}
             </button>
-            <button type="button" onClick={onClose}
-              style={{ padding: "10px 18px", fontSize: "14px", borderRadius: "12px", border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280", cursor: "pointer" }}>
+            <button type="button" onClick={onClose} style={{
+              padding: "12px 20px", fontSize: "14px", borderRadius: "12px",
+              background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)",
+              color: "rgba(255,255,255,0.8)", cursor: "pointer",
+            }}>
               Cancelar
             </button>
           </div>
