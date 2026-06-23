@@ -53,8 +53,11 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
     <div
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       style={{
-        position: "fixed", inset: 0, zIndex: 9999,
-        background: "rgba(10,10,40,0.6)",
+        position: "fixed",
+        top: 0, left: 0, right: 0, bottom: 0,
+        width: "100vw", height: "100vh",
+        zIndex: 9999,
+        background: "rgba(10,10,40,0.65)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
         display: "flex", alignItems: "center", justifyContent: "center",

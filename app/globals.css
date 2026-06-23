@@ -10,6 +10,12 @@
 
 * { box-sizing: border-box; }
 
+/* Ensure modals rendered via portal always cover everything */
+body > [data-modal-overlay] {
+  position: fixed !important;
+  z-index: 9999 !important;
+}
+
 body {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #43e97b 100%);
