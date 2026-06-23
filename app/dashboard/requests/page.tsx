@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { StatusBadge } from "@/components/StatusBadge";
 import { PriorityBadge } from "@/components/PriorityBadge";
+import { RequestFilters } from "./RequestFilters";
+import { Suspense } from "react";
 
 export default async function RequestsPage({ searchParams }: { searchParams: Promise<{ status?: string; sectorId?: string }> }) {
   const session = await getServerSession(authOptions);
@@ -25,8 +27,6 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
     prisma.sector.findMany({ orderBy: { name: "asc" } }),
   ]);
 
-  const statuses = ["PENDIENTE", "EN_PROGRESO", "RESUELTO", "CANCELADO"];
-
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -36,43 +36,9 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
         </Link>
       </div>
 
-      {/* Filtros */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap gap-3">
-        <div>
-          <label className="block text-xs text-gray-500 mb-1">Estado</label>
-          <select
-            defaultValue={status ?? ""}
-            onChange={(e) => {
-              const url = new URL(window.location.href);
-              if (e.target.value) url.searchParams.set("status", e.target.value);
-              else url.searchParams.delete("status");
-              window.location.href = url.toString();
-            }}
-            className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Todos</option>
-            {statuses.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
-          </select>
-        </div>
-        {user.role === "ADMIN" && (
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Sector</label>
-            <select
-              defaultValue={sectorId ?? ""}
-              onChange={(e) => {
-                const url = new URL(window.location.href);
-                if (e.target.value) url.searchParams.set("sectorId", e.target.value);
-                else url.searchParams.delete("sectorId");
-                window.location.href = url.toString();
-              }}
-              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos los sectores</option>
-              {sectors.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-          </div>
-        )}
-      </div>
+      <Suspense>
+        <RequestFilters sectors={sectors} isAdmin={user.role === "ADMIN"} />
+      </Suspense>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-100">
