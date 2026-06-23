@@ -16,7 +16,8 @@ export function UsersTable({ users, sectors }: { users: User[]; sectors: Sector[
 
   return (
     <>
-      <table className="min-w-full">
+      {/* Desktop table */}
+      <table className="hidden md:table min-w-full">
         <thead>
           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)" }}>
             <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Nombre</th>
@@ -45,6 +46,29 @@ export function UsersTable({ users, sectors }: { users: User[]; sectors: Sector[
           ))}
         </tbody>
       </table>
+
+      {/* Mobile cards */}
+      <div className="md:hidden divide-y" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        {users.map((u) => (
+          <div key={u.id} style={{ borderColor: "rgba(255,255,255,0.1)" }}
+            className="px-4 py-4 flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-white truncate">{u.name}</p>
+              <p className="text-xs text-white/50 truncate">{u.email}</p>
+              <p className="text-xs text-white/60 mt-0.5">
+                {roleLabel[u.role] ?? u.role}{u.sector ? ` · ${u.sector}` : ""}
+              </p>
+            </div>
+            <button onClick={() => setEditing(u)} style={{
+              background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.35)",
+              borderRadius: "999px", padding: "4px 12px", color: "white",
+              fontSize: "12px", fontWeight: 700, flexShrink: 0,
+            }}>
+              Editar
+            </button>
+          </div>
+        ))}
+      </div>
 
       {editing && (
         <EditUserModal user={editing} sectors={sectors} onClose={() => setEditing(null)} />

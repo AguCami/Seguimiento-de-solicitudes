@@ -40,23 +40,9 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="max-w-3xl mx-auto space-y-5">
       <div style={glassCard} className="rounded-2xl p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1 min-w-0 pr-4">
-            <h1 className="text-xl font-bold text-white">{request.title}</h1>
-            <p className="text-sm text-white/60 mt-1">
-              {request.sector.name} · Solicitado por {request.createdBy.name} · {new Date(request.createdAt).toLocaleDateString("es-AR")}
-            </p>
-            {(request.startDate || request.endDate) && (
-              <p className="text-xs text-white/45 mt-1">
-                {request.startDate && `Inicio: ${new Date(request.startDate).toLocaleDateString("es-AR")}`}
-                {request.startDate && request.endDate && " · "}
-                {request.endDate && `Fin: ${new Date(request.endDate).toLocaleDateString("es-AR")}`}
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <PriorityBadge priority={request.priority} />
-            <StatusBadge status={request.status} />
+        <div className="mb-4">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <h1 className="text-xl font-bold text-white flex-1 min-w-0">{request.title}</h1>
             {canEdit && (
               <EditRequestButton request={{
                 id: request.id,
@@ -69,6 +55,20 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
               }} />
             )}
           </div>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <PriorityBadge priority={request.priority} />
+            <StatusBadge status={request.status} />
+          </div>
+          <p className="text-sm text-white/60">
+            {request.sector.name} · {request.createdBy.name} · {new Date(request.createdAt).toLocaleDateString("es-AR")}
+          </p>
+          {(request.startDate || request.endDate) && (
+            <p className="text-xs text-white/45 mt-1">
+              {request.startDate && `Inicio: ${new Date(request.startDate).toLocaleDateString("es-AR")}`}
+              {request.startDate && request.endDate && " · "}
+              {request.endDate && `Fin: ${new Date(request.endDate).toLocaleDateString("es-AR")}`}
+            </p>
+          )}
         </div>
 
         <div style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}

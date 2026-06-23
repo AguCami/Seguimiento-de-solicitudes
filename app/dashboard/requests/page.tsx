@@ -30,12 +30,12 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold text-white drop-shadow">Solicitudes</h1>
         <div className="flex items-center gap-2">
           <ExportButton />
-          <Link href="/dashboard/requests/new" className="btn-glass-primary px-4 py-2 text-sm">
-            + Nueva solicitud
+          <Link href="/dashboard/requests/new" className="btn-glass-primary px-3 sm:px-4 py-2 text-sm whitespace-nowrap">
+            + Nueva
           </Link>
         </div>
       </div>
@@ -44,13 +44,14 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
         <RequestFilters sectors={sectors} isAdmin={user.role === "ADMIN"} />
       </Suspense>
 
+      {/* Desktop table */}
       <div style={{
         background: "rgba(255,255,255,0.15)",
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.3)",
         boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
-      }} className="rounded-2xl overflow-hidden">
+      }} className="hidden md:block rounded-2xl overflow-hidden">
         <table className="min-w-full">
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)" }}>
@@ -82,6 +83,48 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {requests.length === 0 && (
+          <div style={{
+            background: "rgba(255,255,255,0.12)",
+            border: "1px solid rgba(255,255,255,0.25)",
+          }} className="rounded-2xl px-5 py-10 text-center text-white/50">
+            No hay solicitudes
+          </div>
+        )}
+        {requests.map((r) => (
+          <Link key={r.id} href={`/dashboard/requests/${r.id}`} style={{
+            background: "rgba(255,255,255,0.15)",
+            backdropFilter: "blur(20px) saturate(180%)",
+            WebkitBackdropFilter: "blur(20px) saturate(180%)",
+            border: "1px solid rgba(255,255,255,0.3)",
+            boxShadow: "0 2px 12px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.35)",
+          }} className="block rounded-2xl p-4 active:opacity-80 transition">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <p className="font-semibold text-white text-sm leading-snug flex-1">{r.title}</p>
+              <StatusBadge status={r.status} />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <PriorityBadge priority={r.priority} />
+              <span style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)" }}
+                className="text-xs text-white/75 font-medium px-2 py-0.5 rounded-full">
+                {r.sector.name}
+              </span>
+            </div>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-white/45">{r.createdBy.name}</p>
+              <div className="flex items-center gap-3">
+                {r._count.comments > 0 && (
+                  <span className="text-xs text-white/45">{r._count.comments} coments.</span>
+                )}
+                <span className="text-xs text-white/45">{new Date(r.createdAt).toLocaleDateString("es-AR")}</span>
+              </div>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );
