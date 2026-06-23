@@ -14,12 +14,12 @@ const fieldStyle: React.CSSProperties = {
   display: "flex", flexDirection: "column", gap: "6px",
 };
 const labelStyle: React.CSSProperties = {
-  fontSize: "11px", fontWeight: 600, letterSpacing: "0.04em",
-  color: "rgba(255,255,255,0.65)", textTransform: "uppercase",
+  fontSize: "11px", fontWeight: 700, letterSpacing: "0.05em",
+  color: "rgba(255,255,255,0.85)", textTransform: "uppercase",
 };
 const inputStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.15)",
-  border: "1px solid rgba(255,255,255,0.3)",
+  background: "rgba(255,255,255,0.25)",
+  border: "1px solid rgba(255,255,255,0.45)",
   borderRadius: "12px",
   padding: "10px 14px",
   fontSize: "14px",
@@ -79,12 +79,12 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
       }}
     >
       <div style={{
-        background: "rgba(255,255,255,0.12)",
-        backdropFilter: "blur(40px) saturate(200%)",
-        WebkitBackdropFilter: "blur(40px) saturate(200%)",
-        border: "1px solid rgba(255,255,255,0.25)",
+        background: "rgba(255,255,255,0.22)",
+        backdropFilter: "blur(40px) saturate(180%)",
+        WebkitBackdropFilter: "blur(40px) saturate(180%)",
+        border: "1px solid rgba(255,255,255,0.4)",
         borderRadius: "24px",
-        boxShadow: "0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)",
+        boxShadow: "0 32px 80px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5)",
         width: "100%", maxWidth: "520px",
         maxHeight: "90vh", overflowY: "auto",
       }}>
@@ -92,15 +92,15 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "20px 24px",
-          borderBottom: "1px solid rgba(255,255,255,0.15)",
+          borderBottom: "1px solid rgba(255,255,255,0.25)",
         }}>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "white", letterSpacing: "-0.02em" }}>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "white", letterSpacing: "-0.02em", textShadow: "0 1px 4px rgba(0,0,0,0.2)" }}>
             Editar solicitud
           </h2>
           <button onClick={onClose} style={{
-            background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)",
+            background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.35)",
             borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer",
-            color: "rgba(255,255,255,0.7)", fontSize: "16px", display: "flex",
+            color: "white", fontSize: "16px", display: "flex",
             alignItems: "center", justifyContent: "center",
           }}>✕</button>
         </div>
