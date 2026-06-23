@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { RegisterUserForm } from "./RegisterUserForm";
 import { AddSectorForm } from "./AddSectorForm";
 import { UsersTable } from "./UsersTable";
+import { SectorsTable } from "./SectorsTable";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
@@ -45,6 +46,13 @@ export default async function AdminPage() {
           <h2 className="font-semibold text-white">Usuarios ({users.length})</h2>
         </div>
         <UsersTable users={users} sectors={sectors} />
+      </div>
+
+      <div style={glassCard} className="rounded-2xl overflow-hidden">
+        <div style={{ borderBottom: "1px solid rgba(255,255,255,0.2)" }} className="px-6 py-4">
+          <h2 className="font-semibold text-white">Sectores ({sectors.length})</h2>
+        </div>
+        <SectorsTable sectors={sectors} />
       </div>
     </div>
   );

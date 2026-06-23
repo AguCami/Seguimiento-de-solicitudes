@@ -3,6 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { SettingsPanel } from "./SettingsPanel";
 
 const roleLabel: Record<string, string> = {
   ADMIN: "Administrador",
@@ -80,6 +81,9 @@ export function Navbar() {
           }} className="hidden sm:block text-sm text-white/80 hover:text-white px-3 py-1.5 rounded-xl transition-all hover:bg-white/20">
             Salir
           </button>
+
+          {/* Settings gear */}
+          <SettingsPanel />
 
           {/* Hamburger - mobile */}
           <button

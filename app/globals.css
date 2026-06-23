@@ -154,3 +154,35 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+/* Dark mode */
+html.dark body {
+  background: linear-gradient(135deg, #0f0c1a 0%, #1a1035 25%, #12102e 50%, #1c1540 75%, #0d0b1e 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+}
+
+html.dark .glass {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.12);
+}
+
+html.dark .glass-input {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.2) !important;
+  color: rgba(255,255,255,0.9) !important;
+}
+
+html.dark .glass-input::placeholder {
+  color: rgba(255,255,255,0.3);
+}
+
+html.dark .btn-glass {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+html.dark select option {
+  background: #1a1035;
+  color: white;
+}
