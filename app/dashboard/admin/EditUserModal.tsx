@@ -39,35 +39,33 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}>
+    <div className="fixed inset-0 flex items-center justify-center z-[100] p-4"
+      style={{ background: "rgba(10,10,30,0.55)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
       <div style={{
-        background: "rgba(255,255,255,0.18)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        WebkitBackdropFilter: "blur(24px) saturate(180%)",
-        border: "1px solid rgba(255,255,255,0.35)",
-        boxShadow: "0 8px 32px rgba(31,38,135,0.25), inset 0 1px 0 rgba(255,255,255,0.5)",
+        background: "rgba(255,255,255,0.92)",
+        border: "1px solid rgba(200,200,240,0.6)",
+        boxShadow: "0 20px 60px rgba(31,38,135,0.35)",
       }} className="rounded-2xl w-full max-w-md">
-        <div style={{ borderBottom: "1px solid rgba(255,255,255,0.2)" }} className="flex items-center justify-between p-6">
-          <h2 className="text-lg font-bold text-white">Editar usuario</h2>
-          <button onClick={onClose} className="text-white/50 hover:text-white text-xl transition">✕</button>
+        <div style={{ borderBottom: "1px solid rgba(100,100,180,0.15)" }} className="flex items-center justify-between p-6">
+          <h2 className="text-lg font-bold" style={{ color: "#1a1a3e" }}>Editar usuario</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl transition">✕</button>
         </div>
 
         <form onSubmit={handleSave} className="p-6 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-1">Nombre</label>
+            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Nombre</label>
             <input value={name} onChange={(e) => setName(e.target.value)} required
-              className="glass-input w-full px-3 py-2 text-sm" />
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-1">Email</label>
+            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Email</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-              className="glass-input w-full px-3 py-2 text-sm" />
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-1">Rol</label>
+            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Rol</label>
             <select value={role} onChange={(e) => setRole(e.target.value)}
-              className="glass-input w-full px-3 py-2 text-sm">
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50">
               <option value="SOLICITANTE">Solicitante</option>
               <option value="RESPONSABLE">Responsable de sector</option>
               <option value="ADMIN">Administrador</option>
@@ -75,25 +73,25 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
           </div>
           {role === "RESPONSABLE" && (
             <div>
-              <label className="block text-xs font-medium text-white/70 mb-1">Sector</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Sector</label>
               <select value={sector} onChange={(e) => setSector(e.target.value)}
-                className="glass-input w-full px-3 py-2 text-sm">
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50">
                 <option value="">Seleccionar sector</option>
                 {sectors.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
               </select>
             </div>
           )}
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-1">
-              Nueva contraseña <span className="text-white/40">(dejar vacío para no cambiar)</span>
+            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>
+              Nueva contraseña <span className="font-normal text-gray-400">(dejar vacío para no cambiar)</span>
             </label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••" className="glass-input w-full px-3 py-2 text-sm" />
+              placeholder="••••••••"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
           </div>
 
           {error && (
-            <p style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)" }}
-              className="text-red-200 text-sm px-3 py-2 rounded-xl">{error}</p>
+            <p className="text-red-600 text-sm px-3 py-2 rounded-xl bg-red-50 border border-red-200">{error}</p>
           )}
 
           <div className="flex gap-2 pt-2">
@@ -101,8 +99,7 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
               {loading ? "Guardando..." : "Guardar cambios"}
             </button>
             <button type="button" onClick={handleDelete} disabled={loading}
-              style={{ background: "rgba(239,68,68,0.2)", border: "1px solid rgba(239,68,68,0.35)", color: "#fca5a5" }}
-              className="px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-500/30 transition disabled:opacity-50">
+              className="px-4 py-2 rounded-xl text-sm font-medium border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 transition disabled:opacity-50">
               Eliminar
             </button>
           </div>

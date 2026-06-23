@@ -41,42 +41,40 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}>
+    <div className="fixed inset-0 flex items-center justify-center z-[100] p-4"
+      style={{ background: "rgba(10,10,30,0.55)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
       <div style={{
-        background: "rgba(255,255,255,0.18)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        WebkitBackdropFilter: "blur(24px) saturate(180%)",
-        border: "1px solid rgba(255,255,255,0.35)",
-        boxShadow: "0 8px 32px rgba(31,38,135,0.25), inset 0 1px 0 rgba(255,255,255,0.5)",
+        background: "rgba(255,255,255,0.92)",
+        border: "1px solid rgba(200,200,240,0.6)",
+        boxShadow: "0 20px 60px rgba(31,38,135,0.35)",
       }} className="rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div style={{ borderBottom: "1px solid rgba(255,255,255,0.2)" }} className="flex items-center justify-between p-6">
-          <h2 className="text-lg font-bold text-white">Editar solicitud</h2>
-          <button onClick={onClose} className="text-white/50 hover:text-white text-xl transition">✕</button>
+        <div style={{ borderBottom: "1px solid rgba(100,100,180,0.15)" }} className="flex items-center justify-between p-6">
+          <h2 className="text-lg font-bold" style={{ color: "#1a1a3e" }}>Editar solicitud</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl transition">✕</button>
         </div>
         <form onSubmit={handleSave} className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-1">Título *</label>
+            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Título *</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} required
-              className="glass-input w-full px-3 py-2 text-sm" />
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-1">Descripción *</label>
+            <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Descripción *</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows={4}
-              className="glass-input w-full px-3 py-2 text-sm resize-none" />
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50 resize-none" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-white/70 mb-1">Sector</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Sector</label>
               <select value={sectorId} onChange={(e) => setSectorId(e.target.value)}
-                className="glass-input w-full px-3 py-2 text-sm">
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50">
                 {sectors.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-white/70 mb-1">Prioridad</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Prioridad</label>
               <select value={priority} onChange={(e) => setPriority(e.target.value)}
-                className="glass-input w-full px-3 py-2 text-sm">
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50">
                 <option value="BAJA">Baja</option>
                 <option value="MEDIA">Media</option>
                 <option value="ALTA">Alta</option>
@@ -86,25 +84,25 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-white/70 mb-1">Fecha de inicio</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Fecha de inicio</label>
               <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                className="glass-input w-full px-3 py-2 text-sm" />
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-white/70 mb-1">Fecha de fin</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(20,20,60,0.7)" }}>Fecha de fin</label>
               <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-                className="glass-input w-full px-3 py-2 text-sm" />
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50" />
             </div>
           </div>
           {error && (
-            <p style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)" }}
-              className="text-red-200 text-sm px-3 py-2 rounded-xl">{error}</p>
+            <p className="text-red-600 text-sm px-3 py-2 rounded-xl bg-red-50 border border-red-200">{error}</p>
           )}
           <div className="flex gap-2 pt-2">
             <button type="submit" disabled={loading} className="btn-glass-primary flex-1 py-2 text-sm">
               {loading ? "Guardando..." : "Guardar cambios"}
             </button>
-            <button type="button" onClick={onClose} className="btn-glass px-4 py-2 text-sm">
+            <button type="button" onClick={onClose}
+              className="px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
               Cancelar
             </button>
           </div>
