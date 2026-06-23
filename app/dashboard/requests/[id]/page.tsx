@@ -8,7 +8,6 @@ import { RequestActions } from "./RequestActions";
 import { CommentBox } from "./CommentBox";
 import { AttachmentsBox } from "./AttachmentsBox";
 import { EditRequestButton } from "./EditRequestButton";
-import { AssignResponsable } from "./AssignResponsable";
 
 const glassCard = {
   background: "rgba(255,255,255,0.15)",
@@ -23,24 +22,16 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   const user = session!.user as any;
   const { id } = await params;
 
-  const [request, responsables] = await Promise.all([
-    prisma.request.findUnique({
-      where: { id },
-      include: {
-        createdBy: { select: { name: true, email: true } },
-        sector: true,
-        assignedTo: { select: { id: true, name: true } },
-        comments: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } },
-        history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
-        attachments: { orderBy: { createdAt: "asc" } },
-      },
-    }),
-    prisma.user.findMany({
-      where: { role: { in: ["RESPONSABLE", "ADMIN"] } },
-      select: { id: true, name: true },
-      orderBy: { name: "asc" },
-    }),
-  ]);
+  const request = await prisma.request.findUnique({
+    where: { id },
+    include: {
+      createdBy: { select: { name: true, email: true } },
+      sector: true,
+      comments: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } },
+      history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
+      attachments: { orderBy: { createdAt: "asc" } },
+    },
+  });
 
   if (!request) notFound();
 
@@ -58,6 +49,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 id: request.id,
                 title: request.title,
                 description: request.description,
+                requestedTo: (request as any).requestedTo ?? null,
                 sectorId: request.sectorId,
                 priority: request.priority,
                 startDate: request.startDate ? request.startDate.toISOString() : null,
@@ -72,6 +64,11 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <p className="text-sm text-white/60">
             {request.sector.name} · {request.createdBy.name} · {new Date(request.createdAt).toLocaleDateString("es-AR")}
           </p>
+          {(request as any).requestedTo && (
+            <p className="text-sm text-white/70 mt-1">
+              <span className="text-white/45">Solicitado a:</span> {(request as any).requestedTo}
+            </p>
+          )}
           {(request.startDate || request.endDate) && (
             <p className="text-xs text-white/45 mt-1">
               {request.startDate && `Inicio: ${new Date(request.startDate).toLocaleDateString("es-AR")}`}
@@ -85,16 +82,6 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           className="rounded-xl p-4 text-sm text-white/85 whitespace-pre-wrap mb-4">
           {request.description}
         </div>
-
-        {canManage && (
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "16px", marginBottom: "4px" }}>
-            <AssignResponsable
-              requestId={id}
-              assignedToId={request.assignedTo?.id ?? null}
-              responsables={responsables}
-            />
-          </div>
-        )}
 
         {canManage && (
           <RequestActions requestId={id} currentStatus={request.status} userRole={user.role} />

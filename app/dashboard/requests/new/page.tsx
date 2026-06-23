@@ -19,6 +19,7 @@ function formatSize(bytes: number) {
 export default function NewRequestPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [requestedTo, setRequestedTo] = useState("");
   const [sectorId, setSectorId] = useState("");
   const [priority, setPriority] = useState("MEDIA");
   const [startDate, setStartDate] = useState("");
@@ -56,7 +57,7 @@ export default function NewRequestPage() {
     const res = await fetch("/api/requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, sectorId, priority, startDate: startDate || undefined, endDate: endDate || undefined }),
+      body: JSON.stringify({ title, description, requestedTo: requestedTo || undefined, sectorId, priority, startDate: startDate || undefined, endDate: endDate || undefined }),
     });
 
     if (!res.ok) { setError("Error al crear la solicitud"); setLoading(false); return; }
@@ -90,6 +91,13 @@ export default function NewRequestPage() {
             <input value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={100}
               className="glass-input w-full px-4 py-2.5 text-sm"
               placeholder="Describí brevemente la solicitud" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white/80 mb-1">Solicitado a</label>
+            <input value={requestedTo} onChange={(e) => setRequestedTo(e.target.value)} maxLength={100}
+              className="glass-input w-full px-4 py-2.5 text-sm"
+              placeholder="Nombre de la persona o área destinataria" />
           </div>
 
           <div>

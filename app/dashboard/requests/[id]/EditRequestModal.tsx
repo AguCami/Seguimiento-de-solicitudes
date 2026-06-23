@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 type Sector = { id: string; name: string };
 type Request = {
   id: string; title: string; description: string;
-  sectorId: string; priority: string;
+  requestedTo: string | null; sectorId: string; priority: string;
   startDate: string | null; endDate: string | null;
 };
 
@@ -34,6 +34,7 @@ const inputStyle: React.CSSProperties = {
 export function EditRequestModal({ request, onClose }: { request: Request; onClose: () => void }) {
   const [title, setTitle] = useState(request.title);
   const [description, setDescription] = useState(request.description);
+  const [requestedTo, setRequestedTo] = useState(request.requestedTo ?? "");
   const [sectorId, setSectorId] = useState(request.sectorId);
   const [priority, setPriority] = useState(request.priority);
   const [startDate, setStartDate] = useState(request.startDate ? request.startDate.slice(0, 10) : "");
@@ -58,7 +59,7 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
     const res = await fetch(`/api/requests/${request.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, sectorId, priority, startDate: startDate || null, endDate: endDate || null }),
+      body: JSON.stringify({ title, description, requestedTo: requestedTo || null, sectorId, priority, startDate: startDate || null, endDate: endDate || null }),
     });
     setLoading(false);
     if (res.ok) { router.refresh(); onClose(); }
@@ -110,6 +111,14 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
           <div style={fieldStyle}>
             <label style={labelStyle}>Título *</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} required style={inputStyle}
+              onFocus={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.6)"; e.target.style.background = "rgba(255,255,255,0.22)"; }}
+              onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.3)"; e.target.style.background = "rgba(255,255,255,0.15)"; }} />
+          </div>
+
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Solicitado a</label>
+            <input value={requestedTo} onChange={(e) => setRequestedTo(e.target.value)} style={inputStyle}
+              placeholder="Nombre de la persona o área"
               onFocus={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.6)"; e.target.style.background = "rgba(255,255,255,0.22)"; }}
               onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.3)"; e.target.style.background = "rgba(255,255,255,0.15)"; }} />
           </div>

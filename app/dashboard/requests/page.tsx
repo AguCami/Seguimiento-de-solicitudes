@@ -37,7 +37,6 @@ export default async function RequestsPage({
       include: {
         sector: true,
         createdBy: { select: { name: true } },
-        assignedTo: { select: { name: true } },
         _count: { select: { comments: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -91,7 +90,7 @@ export default async function RequestsPage({
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Sector</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Prioridad</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Asignado a</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Solicitado a</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Fecha</th>
             </tr>
           </thead>
@@ -110,7 +109,7 @@ export default async function RequestsPage({
                 <td className="px-6 py-4 text-sm text-white/70">{r.sector.name}</td>
                 <td className="px-6 py-4"><PriorityBadge priority={r.priority} /></td>
                 <td className="px-6 py-4"><StatusBadge status={r.status} /></td>
-                <td className="px-6 py-4 text-sm text-white/60">{r.assignedTo?.name ?? <span className="text-white/30">—</span>}</td>
+                <td className="px-6 py-4 text-sm text-white/60">{(r as any).requestedTo ?? <span className="text-white/30">—</span>}</td>
                 <td className="px-6 py-4 text-xs text-white/50">{new Date(r.createdAt).toLocaleDateString("es-AR")}</td>
               </tr>
             ))}
@@ -147,10 +146,10 @@ export default async function RequestsPage({
                 className="text-xs text-white/75 font-medium px-2 py-0.5 rounded-full">
                 {r.sector.name}
               </span>
-              {r.assignedTo && (
+              {(r as any).requestedTo && (
                 <span style={{ background: "rgba(99,102,241,0.25)", border: "1px solid rgba(99,102,241,0.4)" }}
                   className="text-xs text-indigo-200 font-medium px-2 py-0.5 rounded-full">
-                  → {r.assignedTo.name}
+                  → {(r as any).requestedTo}
                 </span>
               )}
             </div>

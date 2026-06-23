@@ -4,7 +4,7 @@ import { EditRequestModal } from "./EditRequestModal";
 
 type RequestData = {
   id: string; title: string; description: string;
-  sectorId: string; priority: string;
+  requestedTo: string | null; sectorId: string; priority: string;
   startDate: string | null; endDate: string | null;
 };
 
