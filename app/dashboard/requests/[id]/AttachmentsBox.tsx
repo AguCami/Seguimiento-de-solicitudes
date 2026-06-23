@@ -64,7 +64,7 @@ export function AttachmentsBox({ requestId, attachments }: { requestId: string; 
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-xl flex-shrink-0">{getIcon(a.type)}</span>
               <div className="min-w-0">
-                <a href={`/api/attachments/${a.id}`} target="_blank" rel="noopener noreferrer"
+                <a href={a.url} target="_blank" rel="noopener noreferrer"
                   className="text-sm font-medium text-blue-600 hover:underline truncate block">{a.name}</a>
                 <p className="text-xs text-gray-400">{formatSize(a.size)}</p>
               </div>

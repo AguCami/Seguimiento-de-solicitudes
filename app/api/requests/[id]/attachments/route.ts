@@ -15,11 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!file) return NextResponse.json({ error: "No se recibió archivo" }, { status: 400 });
   if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: "El archivo no puede superar 10MB" }, { status: 400 });
 
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) return NextResponse.json({ error: "Blob storage no configurado" }, { status: 500 });
-
-  // Store privado: access debe ser omitido (usa el modo del store)
-  const blob = await put(`requests/${id}/${Date.now()}-${file.name}`, file, { token } as any);
+  const blob = await put(`requests/${id}/${Date.now()}-${file.name}`, file, { access: "public" });
 
   const attachment = await prisma.attachment.create({
     data: { name: file.name, url: blob.url, type: file.type, size: file.size, requestId: id },
