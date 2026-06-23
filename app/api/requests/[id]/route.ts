@@ -66,3 +66,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   return NextResponse.json(updated);
 }
+
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+  const { id } = await params;
+  const user = session.user as any;
+
+  const request = await prisma.request.findUnique({ where: { id }, select: { createdById: true } });
+  if (!request) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+  const canDelete = user.role === "ADMIN" || user.id === request.createdById;
+  if (!canDelete) return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+
+  await prisma.request.delete({ where: { id } });
+  return NextResponse.json({ ok: true });
+}

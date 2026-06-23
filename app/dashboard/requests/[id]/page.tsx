@@ -8,6 +8,7 @@ import { RequestActions } from "./RequestActions";
 import { CommentBox } from "./CommentBox";
 import { AttachmentsBox } from "./AttachmentsBox";
 import { EditRequestButton } from "./EditRequestButton";
+import { DeleteRequestButton } from "./DeleteRequestButton";
 
 const glassCard = {
   background: "rgba(255,255,255,0.15)",
@@ -44,7 +45,9 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
         <div className="mb-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h1 className="text-xl font-bold text-white flex-1 min-w-0">{request.title}</h1>
-            {canEdit && (
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {canEdit && <DeleteRequestButton requestId={id} />}
+              {canEdit && (
               <EditRequestButton request={{
                 id: request.id,
                 title: request.title,
@@ -55,7 +58,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 startDate: request.startDate ? request.startDate.toISOString() : null,
                 endDate: request.endDate ? request.endDate.toISOString() : null,
               }} />
-            )}
+              )}
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <PriorityBadge priority={request.priority} />
