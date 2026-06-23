@@ -6,6 +6,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { PriorityBadge } from "@/components/PriorityBadge";
 import { RequestActions } from "./RequestActions";
 import { CommentBox } from "./CommentBox";
+import { AttachmentsBox } from "./AttachmentsBox";
+import { EditRequestButton } from "./EditRequestButton";
 
 export default async function RequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -18,24 +20,47 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
       createdBy: { select: { name: true, email: true } },
       sector: true,
       comments: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } },
+      history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
+      attachments: { orderBy: { createdAt: "asc" } },
     },
   });
 
   if (!request) notFound();
 
+  const canEdit = user.role === "ADMIN" || user.id === (request as any).createdById;
+
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div className="max-w-3xl mx-auto space-y-5">
+      {/* Cabecera */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-start justify-between mb-4">
-          <div>
+          <div className="flex-1 min-w-0 pr-4">
             <h1 className="text-xl font-bold text-gray-800">{request.title}</h1>
             <p className="text-sm text-gray-500 mt-1">
               {request.sector.name} · Solicitado por {request.createdBy.name} · {new Date(request.createdAt).toLocaleDateString("es-AR")}
             </p>
+            {(request.startDate || request.endDate) && (
+              <p className="text-xs text-gray-400 mt-1">
+                {request.startDate && `Inicio: ${new Date(request.startDate).toLocaleDateString("es-AR")}`}
+                {request.startDate && request.endDate && " · "}
+                {request.endDate && `Fin: ${new Date(request.endDate).toLocaleDateString("es-AR")}`}
+              </p>
+            )}
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <PriorityBadge priority={request.priority} />
             <StatusBadge status={request.status} />
+            {canEdit && (
+              <EditRequestButton request={{
+                id: request.id,
+                title: request.title,
+                description: request.description,
+                sectorId: request.sectorId,
+                priority: request.priority,
+                startDate: request.startDate ? request.startDate.toISOString() : null,
+                endDate: request.endDate ? request.endDate.toISOString() : null,
+              }} />
+            )}
           </div>
         </div>
 
@@ -47,6 +72,9 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <RequestActions requestId={id} currentStatus={request.status} userRole={user.role} />
         )}
       </div>
+
+      {/* Adjuntos */}
+      <AttachmentsBox requestId={id} attachments={request.attachments} />
 
       {/* Comentarios */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -68,9 +96,30 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
             </div>
           ))}
         </div>
-
-        {user.role === "SOLICITANTE" && <CommentBox requestId={id} />}
+        <CommentBox requestId={id} />
       </div>
+
+      {/* Historial */}
+      {request.history.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="font-semibold text-gray-700 mb-4">Historial de cambios</h2>
+          <div className="space-y-2">
+            {request.history.map((h) => (
+              <div key={h.id} className="flex items-start gap-3 text-sm">
+                <div className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <span className="font-medium text-gray-700">{h.user.name}</span>
+                  <span className="text-gray-500"> cambió </span>
+                  <span className="font-medium text-gray-700">{h.field}</span>
+                  {h.oldValue && <span className="text-gray-500"> de <span className="line-through text-gray-400">{h.oldValue}</span></span>}
+                  {h.newValue && <span className="text-gray-500"> a <span className="text-gray-700">{h.newValue}</span></span>}
+                  <span className="text-xs text-gray-400 ml-2">{new Date(h.createdAt).toLocaleString("es-AR")}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

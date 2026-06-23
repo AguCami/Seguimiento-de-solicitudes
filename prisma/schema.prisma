@@ -16,8 +16,9 @@ model User {
   sector    String?
   createdAt DateTime @default(now())
 
-  requestsCreated Request[] @relation("CreatedBy")
+  requestsCreated Request[]       @relation("CreatedBy")
   comments        Comment[]
+  history         RequestHistory[]
 }
 
 model Sector {
@@ -28,13 +29,15 @@ model Sector {
 }
 
 model Request {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   description String
-  status      String   @default("PENDIENTE")
-  priority    String   @default("MEDIA")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      String    @default("PENDIENTE")
+  priority    String    @default("MEDIA")
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   createdById String
   createdBy   User   @relation("CreatedBy", fields: [createdById], references: [id])
@@ -42,7 +45,9 @@ model Request {
   sectorId String
   sector   Sector @relation(fields: [sectorId], references: [id])
 
-  comments Comment[]
+  comments    Comment[]
+  history     RequestHistory[]
+  attachments Attachment[]
 }
 
 model Comment {
@@ -55,4 +60,30 @@ model Comment {
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
+}
+
+model RequestHistory {
+  id        String   @id @default(cuid())
+  field     String
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime @default(now())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  type      String
+  size      Int
+  createdAt DateTime @default(now())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 }
