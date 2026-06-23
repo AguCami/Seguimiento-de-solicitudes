@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { RegisterUserForm } from "./RegisterUserForm";
 import { AddSectorForm } from "./AddSectorForm";
+import { UsersTable } from "./UsersTable";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
@@ -35,26 +36,7 @@ export default async function AdminPage() {
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="font-semibold text-gray-700">Usuarios ({users.length})</h2>
         </div>
-        <table className="min-w-full divide-y divide-gray-100">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sector</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {users.map((u) => (
-              <tr key={u.id}>
-                <td className="px-6 py-3 text-sm font-medium text-gray-700">{u.name}</td>
-                <td className="px-6 py-3 text-sm text-gray-500">{u.email}</td>
-                <td className="px-6 py-3 text-sm text-gray-500">{u.role}</td>
-                <td className="px-6 py-3 text-sm text-gray-500">{u.sector ?? "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <UsersTable users={users} sectors={sectors} />
       </div>
     </div>
   );
