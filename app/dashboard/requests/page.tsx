@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { PriorityBadge } from "@/components/PriorityBadge";
 import { RequestFilters } from "./RequestFilters";
 import { Suspense } from "react";
+import { ExportButton } from "./ExportButton";
 
 export default async function RequestsPage({ searchParams }: { searchParams: Promise<{ status?: string; sectorId?: string }> }) {
   const session = await getServerSession(authOptions);
@@ -31,9 +32,12 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white drop-shadow">Solicitudes</h1>
-        <Link href="/dashboard/requests/new" className="btn-glass-primary px-4 py-2 text-sm">
-          + Nueva solicitud
-        </Link>
+        <div className="flex items-center gap-2">
+          <ExportButton />
+          <Link href="/dashboard/requests/new" className="btn-glass-primary px-4 py-2 text-sm">
+            + Nueva solicitud
+          </Link>
+        </div>
       </div>
 
       <Suspense>
