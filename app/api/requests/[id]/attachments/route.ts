@@ -18,7 +18,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return NextResponse.json({ error: "Blob storage no configurado" }, { status: 500 });
 
-  const blob = await put(`requests/${id}/${Date.now()}-${file.name}`, file, { access: "public", token });
+  // Store privado: access debe ser omitido (usa el modo del store)
+  const blob = await put(`requests/${id}/${Date.now()}-${file.name}`, file, { token } as any);
 
   const attachment = await prisma.attachment.create({
     data: { name: file.name, url: blob.url, type: file.type, size: file.size, requestId: id },
