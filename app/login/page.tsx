@@ -87,15 +87,6 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        <div style={{
-          background: "rgba(255,255,255,0.3)",
-          border: "1px solid rgba(255,255,255,0.5)",
-        }} className="mt-5 p-4 rounded-2xl text-xs">
-          <p className="font-semibold mb-1" style={{ color: "rgba(20,20,60,0.75)" }}>Usuarios de prueba:</p>
-          <p style={{ color: "rgba(30,30,80,0.6)" }}>Admin: admin@empresa.com / admin123</p>
-          <p style={{ color: "rgba(30,30,80,0.6)" }}>Responsable IT: it@empresa.com / it123</p>
-          <p style={{ color: "rgba(30,30,80,0.6)" }}>Solicitante: usuario@empresa.com / usuario123</p>
-        </div>
       </div>
     </div>
   );
