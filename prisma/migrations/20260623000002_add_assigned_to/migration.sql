@@ -1,0 +1,2 @@
+ALTER TABLE "Request" ADD COLUMN "assignedToId" TEXT;
+ALTER TABLE "Request" ADD CONSTRAINT "Request_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

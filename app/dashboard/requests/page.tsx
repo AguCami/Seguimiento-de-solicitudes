@@ -7,26 +7,58 @@ import { PriorityBadge } from "@/components/PriorityBadge";
 import { RequestFilters } from "./RequestFilters";
 import { Suspense } from "react";
 import { ExportButton } from "./ExportButton";
+import { RequestsSkeleton } from "@/components/RequestsSkeleton";
 
-export default async function RequestsPage({ searchParams }: { searchParams: Promise<{ status?: string; sectorId?: string }> }) {
+const PAGE_SIZE = 10;
+
+export default async function RequestsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; sectorId?: string; q?: string; page?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   const user = session!.user as any;
-  const { status, sectorId } = await searchParams;
+  const { status, sectorId, q, page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   const where: any = {};
   if (status) where.status = status;
   if (sectorId) where.sectorId = sectorId;
   if (user.role === "SOLICITANTE") where.createdById = user.id;
   if (user.role === "RESPONSABLE" && user.sector) where.sector = { name: user.sector };
+  if (q) where.OR = [
+    { title: { contains: q, mode: "insensitive" } },
+    { description: { contains: q, mode: "insensitive" } },
+  ];
 
-  const [requests, sectors] = await Promise.all([
+  const [requests, total, sectors] = await Promise.all([
     prisma.request.findMany({
       where,
-      include: { sector: true, createdBy: { select: { name: true } }, _count: { select: { comments: true } } },
+      include: {
+        sector: true,
+        createdBy: { select: { name: true } },
+        assignedTo: { select: { name: true } },
+        _count: { select: { comments: true } },
+      },
       orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
     }),
+    prisma.request.count({ where }),
     prisma.sector.findMany({ orderBy: { name: "asc" } }),
   ]);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  function buildPageUrl(p: number) {
+    const params = new URLSearchParams();
+    if (status) params.set("status", status);
+    if (sectorId) params.set("sectorId", sectorId);
+    if (q) params.set("q", q);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    return `/dashboard/requests${qs ? `?${qs}` : ""}`;
+  }
 
   return (
     <div>
@@ -40,7 +72,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
         </div>
       </div>
 
-      <Suspense>
+      <Suspense fallback={<RequestsSkeleton />}>
         <RequestFilters sectors={sectors} isAdmin={user.role === "ADMIN"} />
       </Suspense>
 
@@ -59,8 +91,8 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Sector</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Prioridad</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Estado</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Asignado a</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Fecha</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Coments.</th>
             </tr>
           </thead>
           <tbody>
@@ -68,8 +100,9 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
               <tr><td colSpan={6} className="px-6 py-10 text-center text-white/50">No hay solicitudes</td></tr>
             )}
             {requests.map((r, i) => (
-              <tr key={r.id} style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.08)" : "none" }}
-                className="hover:bg-white/10 transition glass-row">
+              <tr key={r.id}
+                className="hover:bg-white/10 transition glass-row card-enter"
+                style={{ animationDelay: `${i * 40}ms`, borderTop: i > 0 ? "1px solid rgba(255,255,255,0.08)" : "none" } as React.CSSProperties}>
                 <td className="px-6 py-4">
                   <Link href={`/dashboard/requests/${r.id}`} className="font-medium text-white hover:text-white/80 text-sm">{r.title}</Link>
                   <p className="text-xs text-white/50 mt-0.5">{r.createdBy.name}</p>
@@ -77,8 +110,8 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
                 <td className="px-6 py-4 text-sm text-white/70">{r.sector.name}</td>
                 <td className="px-6 py-4"><PriorityBadge priority={r.priority} /></td>
                 <td className="px-6 py-4"><StatusBadge status={r.status} /></td>
+                <td className="px-6 py-4 text-sm text-white/60">{r.assignedTo?.name ?? <span className="text-white/30">—</span>}</td>
                 <td className="px-6 py-4 text-xs text-white/50">{new Date(r.createdAt).toLocaleDateString("es-AR")}</td>
-                <td className="px-6 py-4 text-sm text-white/60">{r._count.comments}</td>
               </tr>
             ))}
           </tbody>
@@ -88,21 +121,22 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {requests.length === 0 && (
-          <div style={{
-            background: "rgba(255,255,255,0.12)",
-            border: "1px solid rgba(255,255,255,0.25)",
-          }} className="rounded-2xl px-5 py-10 text-center text-white/50">
+          <div style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)" }}
+            className="rounded-2xl px-5 py-10 text-center text-white/50">
             No hay solicitudes
           </div>
         )}
-        {requests.map((r) => (
-          <Link key={r.id} href={`/dashboard/requests/${r.id}`} style={{
-            background: "rgba(255,255,255,0.15)",
-            backdropFilter: "blur(20px) saturate(180%)",
-            WebkitBackdropFilter: "blur(20px) saturate(180%)",
-            border: "1px solid rgba(255,255,255,0.3)",
-            boxShadow: "0 2px 12px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.35)",
-          }} className="block rounded-2xl p-4 active:opacity-80 transition">
+        {requests.map((r, i) => (
+          <Link key={r.id} href={`/dashboard/requests/${r.id}`}
+            className="block rounded-2xl p-4 active:opacity-80 transition card-enter"
+            style={{
+              background: "rgba(255,255,255,0.15)",
+              backdropFilter: "blur(20px) saturate(180%)",
+              WebkitBackdropFilter: "blur(20px) saturate(180%)",
+              border: "1px solid rgba(255,255,255,0.3)",
+              boxShadow: "0 2px 12px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.35)",
+              animationDelay: `${i * 50}ms`,
+            }}>
             <div className="flex items-start justify-between gap-2 mb-2">
               <p className="font-semibold text-white text-sm leading-snug flex-1">{r.title}</p>
               <StatusBadge status={r.status} />
@@ -113,19 +147,73 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
                 className="text-xs text-white/75 font-medium px-2 py-0.5 rounded-full">
                 {r.sector.name}
               </span>
+              {r.assignedTo && (
+                <span style={{ background: "rgba(99,102,241,0.25)", border: "1px solid rgba(99,102,241,0.4)" }}
+                  className="text-xs text-indigo-200 font-medium px-2 py-0.5 rounded-full">
+                  → {r.assignedTo.name}
+                </span>
+              )}
             </div>
-            <div className="flex items-center justify-between mt-1">
+            <div className="flex items-center justify-between">
               <p className="text-xs text-white/45">{r.createdBy.name}</p>
               <div className="flex items-center gap-3">
-                {r._count.comments > 0 && (
-                  <span className="text-xs text-white/45">{r._count.comments} coments.</span>
-                )}
+                {r._count.comments > 0 && <span className="text-xs text-white/45">{r._count.comments} coments.</span>}
                 <span className="text-xs text-white/45">{new Date(r.createdAt).toLocaleDateString("es-AR")}</span>
               </div>
             </div>
           </Link>
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-white/50">
+            {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} de {total} solicitudes
+          </p>
+          <div className="flex items-center gap-2">
+            {page > 1 && (
+              <Link href={buildPageUrl(page - 1)} style={{
+                background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)",
+                borderRadius: "10px", padding: "6px 14px", color: "white", fontSize: "13px", fontWeight: 600,
+              }}>
+                ← Anterior
+              </Link>
+            )}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+                  if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, i) =>
+                  p === "..." ? (
+                    <span key={`ellipsis-${i}`} className="text-white/40 px-1 text-sm">…</span>
+                  ) : (
+                    <Link key={p} href={buildPageUrl(p as number)} style={{
+                      background: p === page ? "rgba(102,126,234,0.7)" : "rgba(255,255,255,0.12)",
+                      border: `1px solid ${p === page ? "rgba(102,126,234,0.9)" : "rgba(255,255,255,0.2)"}`,
+                      borderRadius: "8px", padding: "5px 10px", color: "white",
+                      fontSize: "13px", fontWeight: p === page ? 700 : 500, minWidth: "32px", textAlign: "center",
+                    }}>
+                      {p}
+                    </Link>
+                  )
+                )}
+            </div>
+            {page < totalPages && (
+              <Link href={buildPageUrl(page + 1)} style={{
+                background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)",
+                borderRadius: "10px", padding: "6px 14px", color: "white", fontSize: "13px", fontWeight: 600,
+              }}>
+                Siguiente →
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

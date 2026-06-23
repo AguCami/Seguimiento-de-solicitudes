@@ -16,9 +16,10 @@ model User {
   sector    String?
   createdAt DateTime @default(now())
 
-  requestsCreated Request[]       @relation("CreatedBy")
-  comments        Comment[]
-  history         RequestHistory[]
+  requestsCreated  Request[]       @relation("CreatedBy")
+  requestsAssigned Request[]       @relation("AssignedTo")
+  comments         Comment[]
+  history          RequestHistory[]
 }
 
 model Sector {
@@ -41,6 +42,9 @@ model Request {
 
   createdById String
   createdBy   User   @relation("CreatedBy", fields: [createdById], references: [id])
+
+  assignedToId String?
+  assignedTo   User?  @relation("AssignedTo", fields: [assignedToId], references: [id])
 
   sectorId String
   sector   Sector @relation(fields: [sectorId], references: [id])

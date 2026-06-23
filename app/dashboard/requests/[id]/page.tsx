@@ -8,6 +8,7 @@ import { RequestActions } from "./RequestActions";
 import { CommentBox } from "./CommentBox";
 import { AttachmentsBox } from "./AttachmentsBox";
 import { EditRequestButton } from "./EditRequestButton";
+import { AssignResponsable } from "./AssignResponsable";
 
 const glassCard = {
   background: "rgba(255,255,255,0.15)",
@@ -22,24 +23,33 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   const user = session!.user as any;
   const { id } = await params;
 
-  const request = await prisma.request.findUnique({
-    where: { id },
-    include: {
-      createdBy: { select: { name: true, email: true } },
-      sector: true,
-      comments: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } },
-      history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
-      attachments: { orderBy: { createdAt: "asc" } },
-    },
-  });
+  const [request, responsables] = await Promise.all([
+    prisma.request.findUnique({
+      where: { id },
+      include: {
+        createdBy: { select: { name: true, email: true } },
+        sector: true,
+        assignedTo: { select: { id: true, name: true } },
+        comments: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } },
+        history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
+        attachments: { orderBy: { createdAt: "asc" } },
+      },
+    }),
+    prisma.user.findMany({
+      where: { role: { in: ["RESPONSABLE", "ADMIN"] } },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   if (!request) notFound();
 
   const canEdit = user.role === "ADMIN" || user.id === (request as any).createdById;
+  const canManage = user.role === "RESPONSABLE" || user.role === "ADMIN";
 
   return (
     <div className="max-w-3xl mx-auto space-y-5">
-      <div style={glassCard} className="rounded-2xl p-6">
+      <div style={glassCard} className="rounded-2xl p-6 card-enter">
         <div className="mb-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h1 className="text-xl font-bold text-white flex-1 min-w-0">{request.title}</h1>
@@ -72,18 +82,28 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
         </div>
 
         <div style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}
-          className="rounded-xl p-4 text-sm text-white/85 whitespace-pre-wrap">
+          className="rounded-xl p-4 text-sm text-white/85 whitespace-pre-wrap mb-4">
           {request.description}
         </div>
 
-        {(user.role === "RESPONSABLE" || user.role === "ADMIN") && (
+        {canManage && (
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "16px", marginBottom: "4px" }}>
+            <AssignResponsable
+              requestId={id}
+              assignedToId={request.assignedTo?.id ?? null}
+              responsables={responsables}
+            />
+          </div>
+        )}
+
+        {canManage && (
           <RequestActions requestId={id} currentStatus={request.status} userRole={user.role} />
         )}
       </div>
 
       <AttachmentsBox requestId={id} attachments={request.attachments} />
 
-      <div style={glassCard} className="rounded-2xl p-6">
+      <div style={{ ...glassCard, animationDelay: "80ms" }} className="rounded-2xl p-6 card-enter">
         <h2 className="font-semibold text-white mb-4">Comentarios ({request.comments.length})</h2>
         <div className="space-y-4 mb-6">
           {request.comments.length === 0 && <p className="text-white/50 text-sm">No hay comentarios todavía</p>}
@@ -108,7 +128,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
       </div>
 
       {request.history.length > 0 && (
-        <div style={glassCard} className="rounded-2xl p-6">
+        <div style={{ ...glassCard, animationDelay: "120ms" }} className="rounded-2xl p-6 card-enter">
           <h2 className="font-semibold text-white mb-4">Historial de cambios</h2>
           <div className="space-y-2">
             {request.history.map((h) => (

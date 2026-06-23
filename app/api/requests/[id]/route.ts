@@ -31,6 +31,7 @@ const fieldLabels: Record<string, string> = {
   sectorId: "Sector",
   startDate: "Fecha de inicio",
   endDate: "Fecha de fin",
+  assignedToId: "Responsable asignado",
 };
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
