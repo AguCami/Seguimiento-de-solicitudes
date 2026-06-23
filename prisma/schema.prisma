@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("SOLICITANTE")
+  sector    String?
+  createdAt DateTime @default(now())
+
+  requestsCreated Request[] @relation("CreatedBy")
+  comments        Comment[]
+}
+
+model Sector {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  requests    Request[]
+}
+
+model Request {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  status      String   @default("PENDIENTE")
+  priority    String   @default("MEDIA")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdById String
+  createdBy   User   @relation("CreatedBy", fields: [createdById], references: [id])
+
+  sectorId String
+  sector   Sector @relation(fields: [sectorId], references: [id])
+
+  comments Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+}
