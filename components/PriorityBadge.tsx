@@ -1,14 +1,17 @@
-const config: Record<string, { label: string; className: string }> = {
-  BAJA:    { label: "Baja",    className: "bg-gray-100 text-gray-600" },
-  MEDIA:   { label: "Media",   className: "bg-blue-100 text-blue-700" },
-  ALTA:    { label: "Alta",    className: "bg-orange-100 text-orange-700" },
-  URGENTE: { label: "Urgente", className: "bg-red-100 text-red-700" },
+import React from "react";
+
+const config: Record<string, { label: string; style: React.CSSProperties }> = {
+  BAJA:    { label: "Baja",    style: { background: "rgba(156,163,175,0.25)", border: "1px solid rgba(156,163,175,0.4)", color: "#374151" } },
+  MEDIA:   { label: "Media",   style: { background: "rgba(99,102,241,0.22)", border: "1px solid rgba(99,102,241,0.4)", color: "#3730a3" } },
+  ALTA:    { label: "Alta",    style: { background: "rgba(251,146,60,0.25)", border: "1px solid rgba(251,146,60,0.4)", color: "#9a3412" } },
+  URGENTE: { label: "Urgente", style: { background: "rgba(239,68,68,0.22)", border: "1px solid rgba(239,68,68,0.4)", color: "#991b1b" } },
 };
 
 export function PriorityBadge({ priority }: { priority: string }) {
-  const c = config[priority] ?? { label: priority, className: "bg-gray-100 text-gray-600" };
+  const c = config[priority] ?? { label: priority, style: { background: "rgba(156,163,175,0.2)", border: "1px solid rgba(156,163,175,0.3)", color: "#374151" } };
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${c.className}`}>
+    <span style={{ ...c.style, backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
+      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold">
       {c.label}
     </span>
   );

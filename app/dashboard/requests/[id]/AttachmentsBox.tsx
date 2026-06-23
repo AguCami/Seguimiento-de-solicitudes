@@ -43,34 +43,44 @@ export function AttachmentsBox({ requestId, attachments }: { requestId: string; 
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div style={{
+      background: "rgba(255,255,255,0.15)",
+      backdropFilter: "blur(20px) saturate(180%)",
+      WebkitBackdropFilter: "blur(20px) saturate(180%)",
+      border: "1px solid rgba(255,255,255,0.3)",
+      boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+    }} className="rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-700">Adjuntos ({attachments.length})</h2>
-        <label className={`cursor-pointer bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-100 transition ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+        <h2 className="font-semibold text-white">Adjuntos ({attachments.length})</h2>
+        <label className={`cursor-pointer btn-glass px-3 py-1.5 text-sm ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
           {uploading ? "Subiendo..." : "+ Agregar archivo"}
           <input ref={inputRef} type="file" accept="image/*,.pdf" onChange={handleUpload} className="hidden" />
         </label>
       </div>
 
-      {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+      {error && (
+        <p style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)" }}
+          className="text-red-200 text-sm px-3 py-2 rounded-xl mb-3">{error}</p>
+      )}
 
       {attachments.length === 0 && (
-        <p className="text-gray-400 text-sm">No hay archivos adjuntos</p>
+        <p className="text-white/50 text-sm">No hay archivos adjuntos</p>
       )}
 
       <div className="space-y-2">
         {attachments.map((a) => (
-          <div key={a.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div key={a.id} style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}
+            className="flex items-center justify-between p-3 rounded-xl">
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-xl flex-shrink-0">{getIcon(a.type)}</span>
               <div className="min-w-0">
                 <a href={a.url} target="_blank" rel="noopener noreferrer"
-                  className="text-sm font-medium text-blue-600 hover:underline truncate block">{a.name}</a>
-                <p className="text-xs text-gray-400">{formatSize(a.size)}</p>
+                  className="text-sm font-medium text-white hover:text-white/70 underline underline-offset-2 truncate block">{a.name}</a>
+                <p className="text-xs text-white/45">{formatSize(a.size)}</p>
               </div>
             </div>
             <button onClick={() => handleDelete(a.id)}
-              className="text-gray-400 hover:text-red-500 transition ml-3 flex-shrink-0 text-sm">
+              className="text-white/40 hover:text-red-300 transition ml-3 flex-shrink-0 text-sm">
               ✕
             </button>
           </div>

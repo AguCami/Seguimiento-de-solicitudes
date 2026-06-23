@@ -16,28 +16,28 @@ export function UsersTable({ users, sectors }: { users: User[]; sectors: Sector[
 
   return (
     <>
-      <table className="min-w-full divide-y divide-gray-100">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sector</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+      <table className="min-w-full">
+        <thead>
+          <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)" }}>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Nombre</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Email</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Rol</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Sector</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-50">
-          {users.map((u) => (
-            <tr key={u.id} className="hover:bg-gray-50">
-              <td className="px-6 py-3 text-sm font-medium text-gray-700">{u.name}</td>
-              <td className="px-6 py-3 text-sm text-gray-500">{u.email}</td>
-              <td className="px-6 py-3 text-sm text-gray-500">{roleLabel[u.role] ?? u.role}</td>
-              <td className="px-6 py-3 text-sm text-gray-500">{u.sector ?? "-"}</td>
+        <tbody>
+          {users.map((u, i) => (
+            <tr key={u.id}
+              style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.08)" : "none" }}
+              className="hover:bg-white/10 transition glass-row">
+              <td className="px-6 py-3 text-sm font-medium text-white">{u.name}</td>
+              <td className="px-6 py-3 text-sm text-white/65">{u.email}</td>
+              <td className="px-6 py-3 text-sm text-white/65">{roleLabel[u.role] ?? u.role}</td>
+              <td className="px-6 py-3 text-sm text-white/65">{u.sector ?? "-"}</td>
               <td className="px-6 py-3">
-                <button
-                  onClick={() => setEditing(u)}
-                  className="text-xs text-blue-600 hover:underline font-medium"
-                >
+                <button onClick={() => setEditing(u)}
+                  className="text-xs text-white font-medium hover:text-white/70 underline underline-offset-2 transition">
                   Editar
                 </button>
               </td>

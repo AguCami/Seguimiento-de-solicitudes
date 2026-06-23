@@ -17,13 +17,18 @@ export function RequestFilters({ sectors, isAdmin }: { sectors: Sector[]; isAdmi
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap gap-3">
+    <div style={{
+      background: "rgba(255,255,255,0.12)",
+      backdropFilter: "blur(16px)",
+      WebkitBackdropFilter: "blur(16px)",
+      border: "1px solid rgba(255,255,255,0.25)",
+    }} className="rounded-2xl p-4 mb-5 flex flex-wrap gap-4">
       <div>
-        <label className="block text-xs text-gray-500 mb-1">Estado</label>
+        <label className="block text-xs text-white/60 mb-1 font-medium">Estado</label>
         <select
           defaultValue={searchParams.get("status") ?? ""}
           onChange={(e) => update("status", e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="glass-input px-3 py-1.5 text-sm pr-8"
         >
           <option value="">Todos</option>
           {statuses.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
@@ -31,11 +36,11 @@ export function RequestFilters({ sectors, isAdmin }: { sectors: Sector[]; isAdmi
       </div>
       {isAdmin && (
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Sector</label>
+          <label className="block text-xs text-white/60 mb-1 font-medium">Sector</label>
           <select
             defaultValue={searchParams.get("sectorId") ?? ""}
             onChange={(e) => update("sectorId", e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="glass-input px-3 py-1.5 text-sm pr-8"
           >
             <option value="">Todos los sectores</option>
             {sectors.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}

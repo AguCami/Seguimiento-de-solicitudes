@@ -38,75 +38,61 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-800">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div style={{
+        background: "rgba(255,255,255,0.18)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        border: "1px solid rgba(255,255,255,0.35)",
+        boxShadow: "0 8px 32px rgba(31,38,135,0.18), inset 0 1px 0 rgba(255,255,255,0.5)",
+      }} className="rounded-3xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1))",
+            border: "1px solid rgba(255,255,255,0.5)",
+            backdropFilter: "blur(10px)",
+          }} className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4">
+            <svg className="w-8 h-8 text-white drop-shadow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Crear cuenta</h1>
-          <p className="text-gray-500 mt-1">Registrate para enviar solicitudes</p>
+          <h1 className="text-2xl font-bold text-white drop-shadow">Crear cuenta</h1>
+          <p className="text-white/65 mt-1 text-sm">Registrate para enviar solicitudes</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Tu nombre"
-            />
+            <label className="block text-sm font-medium text-white/80 mb-1">Nombre completo</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} required
+              className="glass-input w-full px-4 py-2.5 text-sm" placeholder="Tu nombre" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="tu@email.com"
-            />
+            <label className="block text-sm font-medium text-white/80 mb-1">Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+              className="glass-input w-full px-4 py-2.5 text-sm" placeholder="tu@email.com" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Mínimo 6 caracteres"
-            />
+            <label className="block text-sm font-medium text-white/80 mb-1">Contraseña</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
+              className="glass-input w-full px-4 py-2.5 text-sm" placeholder="Mínimo 6 caracteres" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
-            <input
-              type="password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Repetí la contraseña"
-            />
+            <label className="block text-sm font-medium text-white/80 mb-1">Confirmar contraseña</label>
+            <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required
+              className="glass-input w-full px-4 py-2.5 text-sm" placeholder="Repetí la contraseña" />
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
-          >
+          {error && (
+            <p style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)" }}
+              className="text-red-200 text-sm px-3 py-2 rounded-xl">{error}</p>
+          )}
+          <button type="submit" disabled={loading} className="btn-glass-primary w-full py-2.5 text-sm">
             {loading ? "Creando cuenta..." : "Crear cuenta"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-white/60 mt-6">
           ¿Ya tenés cuenta?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline font-medium">
+          <Link href="/login" className="text-white font-medium hover:text-white/80 underline underline-offset-2">
             Ingresar
           </Link>
         </p>

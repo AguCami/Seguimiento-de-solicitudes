@@ -16,25 +16,33 @@ export default async function AdminPage() {
     prisma.sector.findMany({ orderBy: { name: "asc" } }),
   ]);
 
+  const glassCard = {
+    background: "rgba(255,255,255,0.15)",
+    backdropFilter: "blur(20px) saturate(180%)",
+    WebkitBackdropFilter: "blur(20px) saturate(180%)",
+    border: "1px solid rgba(255,255,255,0.3)",
+    boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+  } as React.CSSProperties;
+
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-800">Administración</h1>
+      <h1 className="text-2xl font-bold text-white drop-shadow">Administración</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="font-semibold text-gray-700 mb-4">Registrar usuario</h2>
+        <div style={glassCard} className="rounded-2xl p-6">
+          <h2 className="font-semibold text-white mb-4">Registrar usuario</h2>
           <RegisterUserForm sectors={sectors} />
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="font-semibold text-gray-700 mb-4">Agregar sector</h2>
+        <div style={glassCard} className="rounded-2xl p-6">
+          <h2 className="font-semibold text-white mb-4">Agregar sector</h2>
           <AddSectorForm />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-700">Usuarios ({users.length})</h2>
+      <div style={glassCard} className="rounded-2xl overflow-hidden">
+        <div style={{ borderBottom: "1px solid rgba(255,255,255,0.2)" }} className="px-6 py-4">
+          <h2 className="font-semibold text-white">Usuarios ({users.length})</h2>
         </div>
         <UsersTable users={users} sectors={sectors} />
       </div>

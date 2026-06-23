@@ -37,27 +37,31 @@ export function RegisterUserForm({ sectors }: { sectors: Sector[] }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Nombre completo"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        className="glass-input w-full px-3 py-2 text-sm" />
       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Email"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        className="glass-input w-full px-3 py-2 text-sm" />
       <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Contraseña"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        className="glass-input w-full px-3 py-2 text-sm" />
       <select value={role} onChange={(e) => setRole(e.target.value)}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        className="glass-input w-full px-3 py-2 text-sm">
         <option value="SOLICITANTE">Solicitante</option>
         <option value="RESPONSABLE">Responsable de sector</option>
         <option value="ADMIN">Administrador</option>
       </select>
       {role === "RESPONSABLE" && (
         <select value={sector} onChange={(e) => setSector(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="glass-input w-full px-3 py-2 text-sm">
           <option value="">Seleccionar sector</option>
           {sectors.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
         </select>
       )}
-      {message && <p className={`text-sm ${message.includes("correctamente") ? "text-green-600" : "text-red-500"}`}>{message}</p>}
-      <button type="submit" disabled={loading}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50">
+      {message && (
+        <p style={message.includes("correctamente")
+          ? { background: "rgba(52,211,153,0.15)", border: "1px solid rgba(52,211,153,0.3)", color: "#6ee7b7" }
+          : { background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#fca5a5" }}
+          className="text-sm px-3 py-2 rounded-xl">{message}</p>
+      )}
+      <button type="submit" disabled={loading} className="btn-glass-primary w-full py-2 text-sm">
         {loading ? "Creando..." : "Crear usuario"}
       </button>
     </form>

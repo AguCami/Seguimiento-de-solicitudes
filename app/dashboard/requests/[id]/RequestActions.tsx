@@ -45,14 +45,14 @@ export function RequestActions({ requestId, currentStatus, userRole }: {
   }
 
   return (
-    <div className="mt-5 pt-5 border-t border-gray-100">
+    <div style={{ borderTop: "1px solid rgba(255,255,255,0.2)" }} className="mt-5 pt-5">
       <div className="flex items-center gap-4 mb-4">
         <div className="flex-1">
-          <label className="block text-xs font-medium text-gray-500 mb-1">Cambiar estado</label>
+          <label className="block text-xs font-medium text-white/60 mb-1">Cambiar estado</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="glass-input px-3 py-2 text-sm"
           >
             {statuses.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
@@ -60,7 +60,7 @@ export function RequestActions({ requestId, currentStatus, userRole }: {
         <button
           onClick={handleUpdate}
           disabled={loading || status === currentStatus}
-          className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+          className="mt-4 btn-glass-primary px-4 py-2 text-sm"
         >
           Actualizar estado
         </button>
@@ -71,12 +71,12 @@ export function RequestActions({ requestId, currentStatus, userRole }: {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Agregar comentario o respuesta..."
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="glass-input flex-1 px-4 py-2.5 text-sm"
         />
         <button
           type="submit"
           disabled={loading || !comment.trim()}
-          className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+          className="btn-glass px-4 py-2.5 text-sm"
         >
           Comentar
         </button>

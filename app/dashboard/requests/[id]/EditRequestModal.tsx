@@ -41,35 +41,42 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-800">Editar solicitud</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}>
+      <div style={{
+        background: "rgba(255,255,255,0.18)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        border: "1px solid rgba(255,255,255,0.35)",
+        boxShadow: "0 8px 32px rgba(31,38,135,0.25), inset 0 1px 0 rgba(255,255,255,0.5)",
+      }} className="rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div style={{ borderBottom: "1px solid rgba(255,255,255,0.2)" }} className="flex items-center justify-between p-6">
+          <h2 className="text-lg font-bold text-white">Editar solicitud</h2>
+          <button onClick={onClose} className="text-white/50 hover:text-white text-xl transition">✕</button>
         </div>
         <form onSubmit={handleSave} className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Título *</label>
+            <label className="block text-xs font-medium text-white/70 mb-1">Título *</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              className="glass-input w-full px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Descripción *</label>
+            <label className="block text-xs font-medium text-white/70 mb-1">Descripción *</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows={4}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+              className="glass-input w-full px-3 py-2 text-sm resize-none" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Sector</label>
+              <label className="block text-xs font-medium text-white/70 mb-1">Sector</label>
               <select value={sectorId} onChange={(e) => setSectorId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="glass-input w-full px-3 py-2 text-sm">
                 {sectors.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Prioridad</label>
+              <label className="block text-xs font-medium text-white/70 mb-1">Prioridad</label>
               <select value={priority} onChange={(e) => setPriority(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="glass-input w-full px-3 py-2 text-sm">
                 <option value="BAJA">Baja</option>
                 <option value="MEDIA">Media</option>
                 <option value="ALTA">Alta</option>
@@ -79,24 +86,25 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Fecha de inicio</label>
+              <label className="block text-xs font-medium text-white/70 mb-1">Fecha de inicio</label>
               <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="glass-input w-full px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Fecha de fin</label>
+              <label className="block text-xs font-medium text-white/70 mb-1">Fecha de fin</label>
               <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="glass-input w-full px-3 py-2 text-sm" />
             </div>
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <p style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)" }}
+              className="text-red-200 text-sm px-3 py-2 rounded-xl">{error}</p>
+          )}
           <div className="flex gap-2 pt-2">
-            <button type="submit" disabled={loading}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50">
+            <button type="submit" disabled={loading} className="btn-glass-primary flex-1 py-2 text-sm">
               {loading ? "Guardando..." : "Guardar cambios"}
             </button>
-            <button type="button" onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
+            <button type="button" onClick={onClose} className="btn-glass px-4 py-2 text-sm">
               Cancelar
             </button>
           </div>

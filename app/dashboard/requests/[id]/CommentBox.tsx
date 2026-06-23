@@ -27,12 +27,12 @@ export function CommentBox({ requestId }: { requestId: string }) {
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Agregar un comentario..."
-        className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="glass-input flex-1 px-4 py-2.5 text-sm"
       />
       <button
         type="submit"
         disabled={loading || !comment.trim()}
-        className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+        className="btn-glass px-4 py-2.5 text-sm"
       >
         Comentar
       </button>
