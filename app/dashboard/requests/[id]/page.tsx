@@ -44,7 +44,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
 
   const isOwner = user.id === (request as any).createdById;
   const isCollaborator = (request as any).collaborators.some((c: any) => c.user.id === user.id);
-  if (!isOwner && !isCollaborator && user.role !== "ADMIN" && user.role !== "RESPONSABLE" && user.role !== "EDITOR") notFound();
+  if (!isOwner && !isCollaborator && user.role !== "ADMIN" && user.role !== "RESPONSABLE" && user.role !== "EDITOR" && user.role !== "GESTOR") notFound();
   const canEdit = user.role === "ADMIN" || isOwner;
   const canManage = user.role === "RESPONSABLE" || user.role === "ADMIN" || (user.role === "EDITOR" && isOwner);
 

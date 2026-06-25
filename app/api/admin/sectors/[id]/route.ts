@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 
 async function isAdmin() {
   const session = await getServerSession(authOptions);
-  return (session?.user as any)?.role === "ADMIN";
+  const role = (session?.user as any)?.role;
+  return role === "ADMIN" || role === "GESTOR";
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

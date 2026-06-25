@@ -10,9 +10,9 @@ import { SectorsTable } from "./SectorsTable";
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
   const user = session!.user as any;
-  if (user.role !== "ADMIN" && user.role !== "EDITOR") redirect("/dashboard");
+  if (user.role !== "ADMIN" && user.role !== "EDITOR" && user.role !== "GESTOR") redirect("/dashboard");
 
-  const isAdmin = user.role === "ADMIN";
+  const isAdmin = user.role === "ADMIN" || user.role === "GESTOR";
 
   const [users, sectors] = await Promise.all([
     isAdmin ? prisma.user.findMany({ orderBy: { createdAt: "desc" } }) : Promise.resolve([]),

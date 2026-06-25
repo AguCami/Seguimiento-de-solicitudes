@@ -38,7 +38,7 @@ export default async function RequestsPage({
   const where: any = {};
   if (status) where.status = status;
   if (sectorId) where.sectorId = sectorId;
-  if (user.role === "SOLICITANTE" || user.role === "EDITOR") {
+  if (user.role === "SOLICITANTE" || user.role === "EDITOR" || user.role === "GESTOR") {
     where.OR = [
       { createdById: user.id },
       { collaborators: { some: { userId: user.id } } },
@@ -52,7 +52,7 @@ export default async function RequestsPage({
     ];
     where.AND = [{ OR: qFilter }];
     delete where.OR;
-    if (user.role === "SOLICITANTE" || user.role === "EDITOR") {
+    if (user.role === "SOLICITANTE" || user.role === "EDITOR" || user.role === "GESTOR") {
       where.AND.push({ OR: [{ createdById: user.id }, { collaborators: { some: { userId: user.id } } }] });
     }
   }

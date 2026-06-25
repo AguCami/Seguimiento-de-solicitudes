@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
-  if (!session || user?.role !== "ADMIN") return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  if (!session || user?.role !== "ADMIN" && user?.role !== "GESTOR") return NextResponse.json({ error: "No autorizado" }, { status: 403 });
 
   const { name, email, password, role, sector } = await req.json();
 

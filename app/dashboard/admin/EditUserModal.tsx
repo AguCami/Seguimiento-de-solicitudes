@@ -95,6 +95,7 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
               <option value="SOLICITANTE">Solicitante</option>
               <option value="RESPONSABLE">Responsable de sector</option>
               <option value="EDITOR">Editor</option>
+              <option value="GESTOR">Gestor (admin sin ver solicitudes ajenas)</option>
               <option value="ADMIN">Administrador</option>
             </select>
           </div>

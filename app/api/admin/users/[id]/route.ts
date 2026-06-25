@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
-  if (!session || user?.role !== "ADMIN") return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  if (!session || user?.role !== "ADMIN" && user?.role !== "GESTOR") return NextResponse.json({ error: "No autorizado" }, { status: 403 });
 
   const { id } = await params;
   const { name, email, role, sector, password } = await req.json();
@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
-  if (!session || user?.role !== "ADMIN") return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  if (!session || user?.role !== "ADMIN" && user?.role !== "GESTOR") return NextResponse.json({ error: "No autorizado" }, { status: 403 });
 
   const { id } = await params;
   if (user.id === id) return NextResponse.json({ error: "No podés eliminar tu propio usuario" }, { status: 400 });
