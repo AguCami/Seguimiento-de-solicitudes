@@ -75,6 +75,8 @@ export function ProfileForm({ user }: { user: UserData }) {
     setSuccess("¡Perfil actualizado correctamente!");
     setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
     setAvatarFile(null);
+    // Invalidate avatar cache so Navbar picks up the new photo
+    sessionStorage.removeItem(`avatar_${user.id}`);
     router.refresh();
   }
 

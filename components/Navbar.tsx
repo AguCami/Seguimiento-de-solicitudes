@@ -29,7 +29,14 @@ export function Navbar() {
 
   useEffect(() => {
     if (!user?.id) return;
-    fetch("/api/profile").then(r => r.ok ? r.json() : null).then(d => { if (d?.avatarUrl) setAvatarUrl(d.avatarUrl); });
+    const cacheKey = `avatar_${user.id}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) { setAvatarUrl(cached === "none" ? null : cached); return; }
+    fetch("/api/profile").then(r => r.ok ? r.json() : null).then(d => {
+      const url = d?.avatarUrl ?? null;
+      sessionStorage.setItem(cacheKey, url ?? "none");
+      setAvatarUrl(url);
+    });
   }, [user?.id]);
 
   useEffect(() => {
