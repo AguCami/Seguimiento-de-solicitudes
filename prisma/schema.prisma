@@ -55,6 +55,7 @@ model Request {
   history       RequestHistory[]
   attachments   Attachment[]
   collaborators RequestCollaborator[]
+  subtasks      SubTask[]
 }
 
 model RequestCollaborator {
@@ -120,6 +121,16 @@ model DirectMessage {
 
   receiverId String
   receiver   User     @relation("MessagesReceived", fields: [receiverId], references: [id])
+}
+
+model SubTask {
+  id        String   @id @default(cuid())
+  title     String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 }
 
 model Attachment {

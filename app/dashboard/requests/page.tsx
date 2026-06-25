@@ -71,7 +71,8 @@ export default async function RequestsPage({
       include: {
         sector: true,
         createdBy: { select: { name: true } },
-        _count: { select: { comments: true } },
+        _count: { select: { comments: true, subtasks: true } },
+        subtasks: { select: { done: true } },
       },
     }),
     prisma.sector.findMany({ orderBy: { name: "asc" } }),
@@ -130,12 +131,13 @@ export default async function RequestsPage({
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Prioridad</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Estado</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Solicitado a</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Subtareas</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Fecha</th>
             </tr>
           </thead>
           <tbody>
             {requests.length === 0 && (
-              <tr><td colSpan={6} className="px-6 py-10 text-center text-white/50">No hay solicitudes</td></tr>
+              <tr><td colSpan={7} className="px-6 py-10 text-center text-white/50">No hay solicitudes</td></tr>
             )}
             {requests.map((r, i) => (
               <tr key={r.id}
@@ -149,6 +151,21 @@ export default async function RequestsPage({
                 <td className="px-6 py-4"><PriorityBadge priority={r.priority} /></td>
                 <td className="px-6 py-4"><StatusBadge status={r.status} /></td>
                 <td className="px-6 py-4 text-sm text-white/60">{(r as any).requestedTo ?? <span className="text-white/30">—</span>}</td>
+                <td className="px-6 py-4">
+                  {(r as any)._count.subtasks > 0 ? (() => {
+                    const done = (r as any).subtasks.filter((s: any) => s.done).length;
+                    const total = (r as any)._count.subtasks;
+                    const pct = Math.round((done / total) * 100);
+                    return (
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ flex: 1, background: "rgba(255,255,255,0.1)", borderRadius: 999, height: 5, minWidth: 48 }}>
+                          <div style={{ height: "100%", borderRadius: 999, width: `${pct}%`, background: done === total ? "rgba(34,197,94,0.7)" : "rgba(99,102,241,0.7)", transition: "width 0.3s" }} />
+                        </div>
+                        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>{done}/{total}</span>
+                      </div>
+                    );
+                  })() : <span className="text-white/25 text-xs">—</span>}
+                </td>
                 <td className="px-6 py-4 text-xs text-white/50">{new Date(r.createdAt).toLocaleDateString("es-AR")}</td>
               </tr>
             ))}
@@ -192,6 +209,18 @@ export default async function RequestsPage({
                 </span>
               )}
             </div>
+            {(r as any)._count.subtasks > 0 && (() => {
+              const done = (r as any).subtasks.filter((s: any) => s.done).length;
+              const total = (r as any)._count.subtasks;
+              return (
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                  <div style={{ flex: 1, background: "rgba(255,255,255,0.1)", borderRadius: 999, height: 4 }}>
+                    <div style={{ height: "100%", borderRadius: 999, width: `${Math.round((done/total)*100)}%`, background: done === total ? "rgba(34,197,94,0.7)" : "rgba(99,102,241,0.7)" }} />
+                  </div>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{done}/{total} subtareas</span>
+                </div>
+              );
+            })()}
             <div className="flex items-center justify-between">
               <p className="text-xs text-white/45">{r.createdBy.name}</p>
               <div className="flex items-center gap-3">

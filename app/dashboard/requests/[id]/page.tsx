@@ -8,6 +8,7 @@ import { RequestActions } from "./RequestActions";
 import { CommentBox } from "./CommentBox";
 import { AttachmentsBox } from "./AttachmentsBox";
 import { EditRequestButton } from "./EditRequestButton";
+import { SubTasksBox } from "./SubTasksBox";
 import { DeleteRequestButton } from "./DeleteRequestButton";
 import { ShareRequestButton } from "./ShareRequestButton";
 
@@ -33,6 +34,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
       history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
       attachments: { orderBy: { createdAt: "asc" } },
       collaborators: { include: { user: { select: { id: true, name: true } } }, orderBy: { createdAt: "asc" } },
+      subtasks: { orderBy: { createdAt: "asc" } },
     },
   });
 
@@ -113,6 +115,12 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
       </div>
 
       <AttachmentsBox requestId={id} attachments={request.attachments} />
+
+      <SubTasksBox
+        requestId={id}
+        subtasks={(request as any).subtasks}
+        canManage={canManage || isOwner}
+      />
 
       <div style={{ ...glassCard, animationDelay: "80ms" }} className="rounded-2xl p-6 card-enter">
         <h2 className="font-semibold text-white mb-4">Comentarios ({request.comments.length})</h2>

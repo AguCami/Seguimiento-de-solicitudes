@@ -54,6 +54,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Sin permisos para cambiar estado de solicitudes ajenas" }, { status: 403 });
   }
 
+  // Block RESUELTO if there are pending subtasks
+  if (data.status === "RESUELTO") {
+    const pendingSubtasks = await prisma.subTask.count({ where: { requestId: id, done: false } });
+    if (pendingSubtasks > 0) {
+      return NextResponse.json({
+        error: `No se puede resolver la solicitud: hay ${pendingSubtasks} subtarea${pendingSubtasks > 1 ? "s" : ""} pendiente${pendingSubtasks > 1 ? "s" : ""}`,
+      }, { status: 400 });
+    }
+  }
+
   // Registrar historial de cambios
   const historyEntries = [];
   for (const key of Object.keys(data)) {
