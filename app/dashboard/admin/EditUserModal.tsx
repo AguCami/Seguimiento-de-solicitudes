@@ -94,6 +94,7 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
             <select value={role} onChange={(e) => setRole(e.target.value)} className={inputCls}>
               <option value="SOLICITANTE">Solicitante</option>
               <option value="RESPONSABLE">Responsable de sector</option>
+              <option value="EDITOR">Editor</option>
               <option value="ADMIN">Administrador</option>
             </select>
           </div>

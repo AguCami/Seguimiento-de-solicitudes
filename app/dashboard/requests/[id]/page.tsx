@@ -36,8 +36,9 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
 
   if (!request) notFound();
 
-  const canEdit = user.role === "ADMIN" || user.id === (request as any).createdById;
-  const canManage = user.role === "RESPONSABLE" || user.role === "ADMIN";
+  const isOwner = user.id === (request as any).createdById;
+  const canEdit = user.role === "ADMIN" || isOwner;
+  const canManage = user.role === "RESPONSABLE" || user.role === "ADMIN" || (user.role === "EDITOR" && isOwner);
 
   return (
     <div className="max-w-3xl mx-auto space-y-5">

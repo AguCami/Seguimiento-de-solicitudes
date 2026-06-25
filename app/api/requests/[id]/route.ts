@@ -42,12 +42,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const user = session.user as any;
   const data = await req.json();
 
+  const current = await prisma.request.findUnique({ where: { id } });
+  if (!current) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+  const isOwner = user.id === current.createdById;
+
   if (data.status && user.role === "SOLICITANTE") {
     return NextResponse.json({ error: "Sin permisos para cambiar estado" }, { status: 403 });
   }
-
-  const current = await prisma.request.findUnique({ where: { id } });
-  if (!current) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+  if (data.status && user.role === "EDITOR" && !isOwner) {
+    return NextResponse.json({ error: "Sin permisos para cambiar estado de solicitudes ajenas" }, { status: 403 });
+  }
 
   // Registrar historial de cambios
   const historyEntries = [];

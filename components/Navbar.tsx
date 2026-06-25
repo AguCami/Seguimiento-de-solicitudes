@@ -7,6 +7,7 @@ import { SettingsPanel } from "./SettingsPanel";
 
 const roleLabel: Record<string, string> = {
   ADMIN: "Administrador",
+  EDITOR: "Editor",
   RESPONSABLE: "Responsable",
   SOLICITANTE: "Solicitante",
 };
@@ -21,7 +22,7 @@ export function Navbar() {
     { href: "/dashboard", label: "Inicio" },
     { href: "/dashboard/requests", label: "Solicitudes" },
     { href: "/dashboard/requests/new", label: "Nueva solicitud" },
-    ...(user?.role === "ADMIN" ? [{ href: "/dashboard/admin", label: "Admin" }] : []),
+    ...(user?.role === "ADMIN" || user?.role === "EDITOR" ? [{ href: "/dashboard/admin", label: "Admin" }] : []),
   ];
 
   const navStyle = {

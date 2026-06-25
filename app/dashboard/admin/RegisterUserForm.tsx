@@ -46,6 +46,7 @@ export function RegisterUserForm({ sectors }: { sectors: Sector[] }) {
         className="glass-input w-full px-3 py-2 text-sm">
         <option value="SOLICITANTE">Solicitante</option>
         <option value="RESPONSABLE">Responsable de sector</option>
+        <option value="EDITOR">Editor</option>
         <option value="ADMIN">Administrador</option>
       </select>
       {role === "RESPONSABLE" && (

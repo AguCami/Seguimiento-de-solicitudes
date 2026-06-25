@@ -7,6 +7,7 @@ type Sector = { id: string; name: string };
 
 const roleLabel: Record<string, string> = {
   ADMIN: "Administrador",
+  EDITOR: "Editor",
   RESPONSABLE: "Responsable",
   SOLICITANTE: "Solicitante",
 };

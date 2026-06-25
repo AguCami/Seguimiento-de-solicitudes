@@ -24,7 +24,7 @@ export default async function RequestsPage({
   const where: any = {};
   if (status) where.status = status;
   if (sectorId) where.sectorId = sectorId;
-  if (user.role === "SOLICITANTE") where.createdById = user.id;
+  if (user.role === "SOLICITANTE" || user.role === "EDITOR") where.createdById = user.id;
   if (user.role === "RESPONSABLE" && user.sector) where.sector = { name: user.sector };
   if (q) where.OR = [
     { title: { contains: q, mode: "insensitive" } },
