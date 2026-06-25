@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 
-type User = { id: string; name: string; role: string };
+type User = { id: string; name: string; role: string; avatarUrl?: string | null };
 type Message = { id: string; content: string; senderId: string; createdAt: string; read: boolean };
 type Conversation = { user: User; last: { content: string; createdAt: string; senderId: string } | null; unread: number };
 
@@ -150,6 +150,15 @@ export function ChatWidget({ myId }: { myId: string }) {
             {view === "chat" && (
               <button onClick={() => { setView("list"); setActiveUser(null); }} style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "8px", padding: "4px 8px", color: "rgba(255,255,255,0.7)", fontSize: "12px", cursor: "pointer" }}>←</button>
             )}
+            {view === "chat" && activeUser && (
+              activeUser.avatarUrl ? (
+                <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", border: "1px solid rgba(255,255,255,0.25)", flexShrink: 0 }} />
+              ) : (
+                <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(102,126,234,0.5)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, color: "white", flexShrink: 0 }}>
+                  {activeUser.name[0].toUpperCase()}
+                </div>
+              )
+            )}
             <p style={{ fontSize: "14px", fontWeight: 700, color: "white", margin: 0, flex: 1 }}>
               {view === "list" ? "Mensajes" : activeUser?.name}
             </p>
@@ -180,9 +189,13 @@ export function ChatWidget({ myId }: { myId: string }) {
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                 >
-                  <div style={{ width: "38px", height: "38px", borderRadius: "50%", flexShrink: 0, background: "rgba(102,126,234,0.5)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px", fontWeight: 700, color: "white" }}>
-                    {conv.user.name[0].toUpperCase()}
-                  </div>
+                  {conv.user.avatarUrl ? (
+                    <img src={conv.user.avatarUrl} alt={conv.user.name} style={{ width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "1px solid rgba(255,255,255,0.2)" }} />
+                  ) : (
+                    <div style={{ width: "38px", height: "38px", borderRadius: "50%", flexShrink: 0, background: "rgba(102,126,234,0.5)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px", fontWeight: 700, color: "white" }}>
+                      {conv.user.name[0].toUpperCase()}
+                    </div>
+                  )}
                   <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <p style={{ fontSize: "13px", fontWeight: 600, color: "white", margin: 0 }}>{conv.user.name}</p>
