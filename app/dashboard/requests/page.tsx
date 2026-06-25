@@ -7,6 +7,7 @@ import { PriorityBadge } from "@/components/PriorityBadge";
 import { RequestFilters } from "./RequestFilters";
 import { Suspense } from "react";
 import { ExportButton } from "./ExportButton";
+import { ExportPDFListButton } from "./ExportPDFListButton";
 import { RequestsSkeleton } from "@/components/RequestsSkeleton";
 
 const PAGE_SIZE = 10;
@@ -102,6 +103,7 @@ export default async function RequestsPage({
         <h1 className="text-2xl font-bold text-white drop-shadow">Solicitudes</h1>
         <div className="flex items-center gap-2">
           <ExportButton />
+          <Suspense fallback={null}><ExportPDFListButton /></Suspense>
           <Link href="/dashboard/requests/new" className="btn-glass-primary px-3 sm:px-4 py-2 text-sm whitespace-nowrap">
             + Nueva
           </Link>
