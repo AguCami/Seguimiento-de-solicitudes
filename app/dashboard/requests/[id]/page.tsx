@@ -32,7 +32,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
     include: {
       createdBy: { select: { name: true, email: true } },
       sector: true,
-      comments: { include: { author: { select: { name: true, role: true } }, attachments: true }, orderBy: { createdAt: "asc" } },
+      comments: { include: { author: { select: { name: true, role: true, avatarUrl: true } }, attachments: true }, orderBy: { createdAt: "asc" } },
       history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
       attachments: { orderBy: { createdAt: "asc" } },
       collaborators: { include: { user: { select: { id: true, name: true } } }, orderBy: { createdAt: "asc" } },
@@ -140,10 +140,15 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           {request.comments.length === 0 && <p className="text-white/50 text-sm">No hay comentarios todavía</p>}
           {request.comments.map((c) => (
             <div key={c.id} className="flex gap-3">
-              <div style={{ background: "rgba(var(--a1),0.4)", border: "1px solid rgba(255,255,255,0.3)" }}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium text-sm flex-shrink-0">
-                {c.author.name[0].toUpperCase()}
-              </div>
+              {(c.author as any).avatarUrl ? (
+                <img src={(c.author as any).avatarUrl} alt={c.author.name}
+                  style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", border: "1px solid rgba(255,255,255,0.3)", flexShrink: 0 }} />
+              ) : (
+                <div style={{ background: "rgba(var(--a1),0.4)", border: "1px solid rgba(255,255,255,0.3)" }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium text-sm flex-shrink-0">
+                  {c.author.name[0].toUpperCase()}
+                </div>
+              )}
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-medium text-white">{c.author.name}</span>
