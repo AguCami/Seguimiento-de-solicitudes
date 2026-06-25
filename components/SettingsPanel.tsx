@@ -31,6 +31,7 @@ export function SettingsPanel() {
   const [gearClicks, setGearClicks] = useState(0);
   const [easterActive, setEasterActive] = useState(false);
   const [activeTheme, setActiveTheme] = useState("indigo");
+  const [darkMode, setDarkMode] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [orgName, setOrgName] = useState("Solicitudes");
   const [logoUploading, setLogoUploading] = useState(false);
@@ -44,6 +45,9 @@ export function SettingsPanel() {
     const saved = localStorage.getItem("theme") ?? "indigo";
     setActiveTheme(saved);
     applyTheme(saved);
+    const dm = localStorage.getItem("darkMode") === "true";
+    setDarkMode(dm);
+    if (dm) document.documentElement.classList.add("dark");
     // Fetch app settings
     fetch("/api/settings").then(r => r.json()).then(s => {
       if (s.logoUrl) setLogoUrl(s.logoUrl);
@@ -73,6 +77,14 @@ export function SettingsPanel() {
       }
       return next;
     });
+  }
+
+  function toggleDarkMode() {
+    const next = !darkMode;
+    setDarkMode(next);
+    if (next) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+    localStorage.setItem("darkMode", String(next));
   }
 
   function handleThemeChange(id: string) {
@@ -129,6 +141,30 @@ export function SettingsPanel() {
       <p style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "18px" }}>
         Configuración
       </p>
+
+      {/* ── Modo oscuro ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 18 }}>{darkMode ? "🌙" : "☀️"}</span>
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "white", margin: 0 }}>Modo oscuro</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", margin: 0 }}>{darkMode ? "Activado" : "Desactivado"}</p>
+          </div>
+        </div>
+        <button onClick={toggleDarkMode} style={{
+          width: 44, height: 26, borderRadius: 999, border: "none", cursor: "pointer",
+          background: darkMode ? "rgba(102,126,234,0.9)" : "rgba(255,255,255,0.25)",
+          position: "relative", transition: "background 0.25s", flexShrink: 0,
+        }}>
+          <span style={{
+            position: "absolute", top: 3, left: darkMode ? 21 : 3,
+            width: 20, height: 20, background: "white", borderRadius: "50%",
+            transition: "left 0.25s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)", display: "block",
+          }} />
+        </button>
+      </div>
+
+      {divider}
 
       {/* ── Tema ── */}
       <div>
