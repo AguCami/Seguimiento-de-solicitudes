@@ -4,6 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { PrintTrigger } from "./PrintTrigger";
 
+async function getAppSettings() {
+  try {
+    const rows = await (prisma as any).appSetting.findMany();
+    const s: Record<string, string> = {};
+    for (const r of rows) s[r.key] = r.value;
+    return s;
+  } catch { return {}; }
+}
+
 export default async function PrintRequestPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) notFound();
@@ -34,6 +43,10 @@ export default async function PrintRequestPage({ params }: { params: Promise<{ i
   const PRIORITY_LABELS: Record<string, string> = {
     BAJA: "Baja", MEDIA: "Media", ALTA: "Alta", URGENTE: "Urgente",
   };
+
+  const appSettings = await getAppSettings();
+  const logoUrl = appSettings.logoUrl ?? null;
+  const orgName = appSettings.orgName ?? "Sistema de Seguimiento de Solicitudes";
 
   const doneTasks = (request as any).subtasks.filter((s: any) => s.done).length;
   const totalTasks = (request as any).subtasks.length;
@@ -100,7 +113,12 @@ export default async function PrintRequestPage({ params }: { params: Promise<{ i
 
         <div className="page">
           <div className="header">
-            <div className="logo">Sistema de Seguimiento de Solicitudes</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
+              {logoUrl && (
+                <img src={logoUrl} alt="Logo" style={{ height: 48, maxWidth: 140, objectFit: "contain" }} />
+              )}
+              <div className="logo" style={{ marginBottom: 0 }}>{orgName}</div>
+            </div>
             <h1>{request.title}</h1>
             <div className="badges">
               <span className={`badge badge-status-${request.status}`}>{STATUS_LABELS[request.status] ?? request.status}</span>
