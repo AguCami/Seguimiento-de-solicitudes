@@ -42,34 +42,40 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
     setLoading(true);
     setError("");
 
-    const form = new FormData();
-    form.append("name", name);
-    form.append("email", email);
-    form.append("role", role);
-    form.append("sector", sector);
-    if (password) form.append("password", password);
-    if (avatarFile) form.append("avatar", avatarFile);
+    try {
+      const form = new FormData();
+      form.append("name", name);
+      form.append("email", email);
+      form.append("role", role);
+      form.append("sector", sector);
+      if (password) form.append("password", password);
+      if (avatarFile) form.append("avatar", avatarFile);
 
-    const res = await fetch(`/api/admin/users/${user.id}`, { method: "PATCH", body: form });
-    setLoading(false);
-    if (res.ok) {
-      // Invalidate navbar avatar cache for this user
-      try { sessionStorage.removeItem(`avatar_${user.id}`); } catch {}
-      router.refresh();
-      onClose();
-    } else {
-      const d = await res.json();
-      setError(d.error ?? "Error al guardar");
+      const res = await fetch(`/api/admin/users/${user.id}`, { method: "PATCH", body: form });
+      if (res.ok) {
+        try { sessionStorage.removeItem(`avatar_${user.id}`); } catch {}
+        router.refresh();
+        onClose();
+      } else {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error ?? `Error ${res.status} al guardar`);
+      }
+    } catch (err) {
+      setError("Error de red al guardar");
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleDelete() {
     if (!confirm(`¿Eliminar a ${user.name}? Esta acción no se puede deshacer.`)) return;
     setLoading(true);
-    const res = await fetch(`/api/admin/users/${user.id}`, { method: "DELETE" });
-    setLoading(false);
-    if (res.ok) { router.refresh(); onClose(); }
-    else { const d = await res.json(); setError(d.error ?? "Error al eliminar"); }
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}`, { method: "DELETE" });
+      if (res.ok) { router.refresh(); onClose(); }
+      else { const d = await res.json().catch(() => ({})); setError(d.error ?? "Error al eliminar"); }
+    } catch { setError("Error de red al eliminar"); }
+    finally { setLoading(false); }
   }
 
   const modal = (
