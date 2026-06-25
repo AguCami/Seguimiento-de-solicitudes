@@ -19,6 +19,8 @@ model User {
   requestsCreated  Request[]       @relation("CreatedBy")
   comments         Comment[]
   history          RequestHistory[]
+  messagesSent     DirectMessage[] @relation("MessagesSent")
+  messagesReceived DirectMessage[] @relation("MessagesReceived")
 }
 
 model Sector {
@@ -76,6 +78,19 @@ model RequestHistory {
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model DirectMessage {
+  id         String   @id @default(cuid())
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  senderId   String
+  sender     User     @relation("MessagesSent", fields: [senderId], references: [id])
+
+  receiverId String
+  receiver   User     @relation("MessagesReceived", fields: [receiverId], references: [id])
 }
 
 model Attachment {
