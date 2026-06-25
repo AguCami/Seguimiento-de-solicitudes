@@ -3,7 +3,7 @@
 export function ExportPDFButton({ requestId }: { requestId: string }) {
   return (
     <a
-      href={`/dashboard/requests/${requestId}/print`}
+      href={`/requests/${requestId}/print`}
       target="_blank"
       rel="noopener noreferrer"
       title="Exportar PDF"

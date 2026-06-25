@@ -6,7 +6,7 @@ export function ExportPDFListButton() {
 
   function handleExport() {
     const params = new URLSearchParams(searchParams.toString());
-    const url = `/dashboard/requests/print?${params.toString()}`;
+    const url = `/requests/print?${params.toString()}`;
     window.open(url, "_blank");
   }
 
