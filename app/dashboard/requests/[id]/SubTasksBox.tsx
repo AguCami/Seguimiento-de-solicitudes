@@ -66,7 +66,7 @@ export function SubTasksBox({ requestId, subtasks, canManage }: {
       WebkitBackdropFilter: "blur(20px) saturate(180%)",
       border: "1px solid rgba(255,255,255,0.3)",
       boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
-    }} className="rounded-2xl p-6 card-enter" style2={{ animationDelay: "60ms" }}>
+    }} className="rounded-2xl p-6 card-enter">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
