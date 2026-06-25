@@ -136,6 +136,11 @@ model SubTask {
   request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 }
 
+model AppSetting {
+  key   String @id
+  value String
+}
+
 model Attachment {
   id        String   @id @default(cuid())
   name      String
