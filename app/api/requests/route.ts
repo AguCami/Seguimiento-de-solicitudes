@@ -29,17 +29,40 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(requests);
 }
 
+function computeNextOccurrence(recurrence: string): Date | null {
+  const now = new Date();
+  if (recurrence === "DAILY") { now.setDate(now.getDate() + 1); return now; }
+  if (recurrence === "WEEKLY") { now.setDate(now.getDate() + 7); return now; }
+  if (recurrence === "MONTHLY") { now.setMonth(now.getMonth() + 1); return now; }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const { title, description, sectorId, priority } = await req.json();
+  const body = await req.json();
+  const { title, description, sectorId, priority, requestedTo, startDate, endDate, recurrence } = body;
   const user = session.user as any;
 
-  const request = await prisma.request.create({
-    data: { title, description, sectorId, priority: priority || "MEDIA", createdById: user.id },
+  const rec = recurrence ?? "NONE";
+  const nextOccurrence = computeNextOccurrence(rec);
+
+  const request = await (prisma.request as any).create({
+    data: {
+      title,
+      description,
+      sectorId,
+      priority: priority || "MEDIA",
+      createdById: user.id,
+      requestedTo: requestedTo ?? null,
+      startDate: startDate ? new Date(startDate) : null,
+      endDate: endDate ? new Date(endDate) : null,
+      recurrence: rec,
+      nextOccurrence,
+    },
     include: { sector: true, createdBy: { select: { name: true } } },
-  });
+  } as any);
 
   return NextResponse.json(request, { status: 201 });
 }

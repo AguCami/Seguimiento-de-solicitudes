@@ -1,13 +1,61 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+
+type UserMention = { id: string; name: string };
 
 export function CommentBox({ requestId }: { requestId: string }) {
   const [comment, setComment] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<UserMention[]>([]);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [mentionIndex, setMentionIndex] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/users").then(r => r.json()).then((data: UserMention[]) => setUsers(data)).catch(() => {});
+  }, []);
+
+  const filteredUsers = mentionQuery !== null
+    ? users.filter(u => u.name.toLowerCase().includes(mentionQuery.toLowerCase())).slice(0, 5)
+    : [];
+
+  function handleCommentChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setComment(val);
+
+    const cursor = e.target.selectionStart ?? val.length;
+    const textBefore = val.slice(0, cursor);
+    const match = textBefore.match(/@(\w*)$/);
+    if (match) {
+      setMentionQuery(match[1]);
+      setMentionIndex(0);
+    } else {
+      setMentionQuery(null);
+    }
+  }
+
+  function insertMention(user: UserMention) {
+    const cursor = inputRef.current?.selectionStart ?? comment.length;
+    const textBefore = comment.slice(0, cursor);
+    const textAfter = comment.slice(cursor);
+    const atIdx = textBefore.lastIndexOf("@");
+    const newText = textBefore.slice(0, atIdx) + `@${user.name} ` + textAfter;
+    setComment(newText);
+    setMentionQuery(null);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (mentionQuery === null || filteredUsers.length === 0) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); setMentionIndex(i => Math.min(i + 1, filteredUsers.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setMentionIndex(i => Math.max(i - 1, 0)); }
+    else if (e.key === "Enter" || e.key === "Tab") { e.preventDefault(); insertMention(filteredUsers[mentionIndex]); }
+    else if (e.key === "Escape") { setMentionQuery(null); }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,6 +69,7 @@ export function CommentBox({ requestId }: { requestId: string }) {
     await fetch(`/api/requests/${requestId}/comments`, { method: "POST", body: form });
     setComment("");
     setFile(null);
+    setMentionQuery(null);
     if (fileRef.current) fileRef.current.value = "";
     setLoading(false);
     router.refresh();
@@ -34,13 +83,52 @@ export function CommentBox({ requestId }: { requestId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <div className="flex gap-2">
-        <input
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Agregar un comentario..."
-          className="glass-input flex-1 px-4 py-2.5 text-sm"
-        />
+      <div className="flex gap-2" style={{ position: "relative" }}>
+        <div style={{ flex: 1, position: "relative" }}>
+          <input
+            ref={inputRef}
+            value={comment}
+            onChange={handleCommentChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Agregar un comentario… (usá @nombre para mencionar)"
+            className="glass-input w-full px-4 py-2.5 text-sm"
+          />
+          {/* Mention dropdown */}
+          {mentionQuery !== null && filteredUsers.length > 0 && (
+            <div style={{
+              position: "absolute", bottom: "100%", left: 0, right: 0, marginBottom: 4,
+              background: "rgba(20,18,60,0.95)", backdropFilter: "blur(20px)",
+              border: "1px solid rgba(99,102,241,0.5)", borderRadius: 12,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+              overflow: "hidden", zIndex: 50,
+            }}>
+              {filteredUsers.map((u, i) => (
+                <button
+                  key={u.id}
+                  type="button"
+                  onClick={() => insertMention(u)}
+                  style={{
+                    width: "100%", textAlign: "left", padding: "8px 14px",
+                    background: i === mentionIndex ? "rgba(99,102,241,0.3)" : "transparent",
+                    border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 8,
+                  }}
+                >
+                  <div style={{
+                    width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
+                    background: "rgba(99,102,241,0.5)", display: "flex", alignItems: "center",
+                    justifyContent: "center", fontSize: 11, fontWeight: 700, color: "white",
+                  }}>
+                    {u.name[0].toUpperCase()}
+                  </div>
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.9)", fontWeight: i === mentionIndex ? 600 : 400 }}>
+                    @{u.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Attach file */}
         <label title="Adjuntar archivo" style={{
           background: file ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.12)",
@@ -55,6 +143,7 @@ export function CommentBox({ requestId }: { requestId: string }) {
           <input ref={fileRef} type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" className="hidden"
             onChange={e => setFile(e.target.files?.[0] ?? null)} />
         </label>
+
         <button
           type="submit"
           disabled={loading || (!comment.trim() && !file)}

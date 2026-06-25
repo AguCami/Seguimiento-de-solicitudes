@@ -11,6 +11,8 @@ import { EditRequestButton } from "./EditRequestButton";
 import { SubTasksBox } from "./SubTasksBox";
 import { DeleteRequestButton } from "./DeleteRequestButton";
 import { ShareRequestButton } from "./ShareRequestButton";
+import { ExportPDFButton } from "./ExportPDFButton";
+import { MentionText } from "@/components/MentionText";
 
 const glassCard = {
   background: "rgba(255,255,255,0.15)",
@@ -53,6 +55,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <div className="flex items-start justify-between gap-2 mb-2">
             <h1 className="text-xl font-bold text-white flex-1 min-w-0">{request.title}</h1>
             <div className="flex items-center gap-2 flex-shrink-0">
+              <ExportPDFButton requestId={id} />
               {canEdit && <ShareRequestButton requestId={id} collaborators={(request as any).collaborators} />}
               {canEdit && <DeleteRequestButton requestId={id} />}
               {canEdit && (
@@ -65,6 +68,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 priority: request.priority,
                 startDate: request.startDate ? request.startDate.toISOString() : null,
                 endDate: request.endDate ? request.endDate.toISOString() : null,
+                recurrence: (request as any).recurrence ?? "NONE",
               }} />
               )}
             </div>
@@ -94,6 +98,14 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 </span>
               ))}
             </div>
+          )}
+          {(request as any).recurrence && (request as any).recurrence !== "NONE" && (
+            <p className="text-xs mt-1" style={{ color: "rgba(167,243,208,0.8)" }}>
+              🔁 Recurrencia: {{ DAILY: "Diaria", WEEKLY: "Semanal", MONTHLY: "Mensual" }[(request as any).recurrence as string]}
+              {(request as any).nextOccurrence && (
+                <span className="text-white/40 ml-1">· próxima: {new Date((request as any).nextOccurrence).toLocaleDateString("es-AR")}</span>
+              )}
+            </p>
           )}
           {(request.startDate || request.endDate) && (
             <p className="text-xs text-white/45 mt-1">
@@ -139,7 +151,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 </div>
                 {c.content && (
                   <p style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)" }}
-                    className="text-sm text-white/85 rounded-xl p-3">{c.content}</p>
+                    className="text-sm text-white/85 rounded-xl p-3"><MentionText text={c.content} /></p>
                 )}
                 {(c as any).attachments?.map((a: any) => (
                   <a key={a.id} href={a.url} target="_blank" rel="noopener noreferrer"

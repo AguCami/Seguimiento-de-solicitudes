@@ -5,7 +5,7 @@ import { EditRequestModal } from "./EditRequestModal";
 type RequestData = {
   id: string; title: string; description: string;
   requestedTo: string | null; sectorId: string; priority: string;
-  startDate: string | null; endDate: string | null;
+  startDate: string | null; endDate: string | null; recurrence?: string;
 };
 
 export function EditRequestButton({ request }: { request: RequestData }) {

@@ -48,6 +48,9 @@ model Request {
 
   requestedTo  String?
 
+  recurrence     String   @default("NONE")
+  nextOccurrence DateTime?
+
   sectorId String
   sector   Sector @relation(fields: [sectorId], references: [id])
 

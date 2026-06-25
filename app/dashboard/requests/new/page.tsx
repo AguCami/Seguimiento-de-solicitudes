@@ -24,6 +24,7 @@ export default function NewRequestPage() {
   const [priority, setPriority] = useState("MEDIA");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [recurrence, setRecurrence] = useState("NONE");
   const [files, setFiles] = useState<File[]>([]);
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,7 +58,7 @@ export default function NewRequestPage() {
     const res = await fetch("/api/requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, requestedTo: requestedTo || undefined, sectorId, priority, startDate: startDate || undefined, endDate: endDate || undefined }),
+      body: JSON.stringify({ title, description, requestedTo: requestedTo || undefined, sectorId, priority, startDate: startDate || undefined, endDate: endDate || undefined, recurrence }),
     });
 
     if (!res.ok) { setError("Error al crear la solicitud"); setLoading(false); return; }
@@ -139,6 +140,22 @@ export default function NewRequestPage() {
               <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
                 className="glass-input w-full px-4 py-2.5 text-sm" />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white/80 mb-1">Recurrencia</label>
+            <select value={recurrence} onChange={(e) => setRecurrence(e.target.value)}
+              className="glass-input w-full px-4 py-2.5 text-sm">
+              <option value="NONE">Sin recurrencia</option>
+              <option value="DAILY">Diaria</option>
+              <option value="WEEKLY">Semanal</option>
+              <option value="MONTHLY">Mensual</option>
+            </select>
+            {recurrence !== "NONE" && (
+              <p className="text-xs text-white/50 mt-1">
+                Se creará automáticamente una nueva solicitud igual cada vez que se complete el ciclo.
+              </p>
+            )}
           </div>
 
           {/* Adjuntos */}

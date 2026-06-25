@@ -7,7 +7,7 @@ type Sector = { id: string; name: string };
 type Request = {
   id: string; title: string; description: string;
   requestedTo: string | null; sectorId: string; priority: string;
-  startDate: string | null; endDate: string | null;
+  startDate: string | null; endDate: string | null; recurrence?: string;
 };
 
 const fieldStyle: React.CSSProperties = {
@@ -39,6 +39,7 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
   const [priority, setPriority] = useState(request.priority);
   const [startDate, setStartDate] = useState(request.startDate ? request.startDate.slice(0, 10) : "");
   const [endDate, setEndDate] = useState(request.endDate ? request.endDate.slice(0, 10) : "");
+  const [recurrence, setRecurrence] = useState(request.recurrence ?? "NONE");
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -59,7 +60,7 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
     const res = await fetch(`/api/requests/${request.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, requestedTo: requestedTo || null, sectorId, priority, startDate: startDate || null, endDate: endDate || null }),
+      body: JSON.stringify({ title, description, requestedTo: requestedTo || null, sectorId, priority, startDate: startDate || null, endDate: endDate || null, recurrence }),
     });
     setLoading(false);
     if (res.ok) { router.refresh(); onClose(); }
@@ -167,6 +168,16 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
                 onFocus={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.6)"; }}
                 onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.3)"; }} />
             </div>
+          </div>
+
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Recurrencia</label>
+            <select value={recurrence} onChange={e => setRecurrence(e.target.value)} style={inputStyle}>
+              <option value="NONE" style={{ background: "#3b3ab5" }}>Sin recurrencia</option>
+              <option value="DAILY" style={{ background: "#3b3ab5" }}>Diaria</option>
+              <option value="WEEKLY" style={{ background: "#3b3ab5" }}>Semanal</option>
+              <option value="MONTHLY" style={{ background: "#3b3ab5" }}>Mensual</option>
+            </select>
           </div>
 
           {error && (

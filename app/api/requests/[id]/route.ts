@@ -70,7 +70,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   // Sanitize: only allow known fields and convert dates properly
-  const allowedFields = ["title", "description", "requestedTo", "sectorId", "priority", "status", "startDate", "endDate"];
+  const allowedFields = ["title", "description", "requestedTo", "sectorId", "priority", "status", "startDate", "endDate", "recurrence"];
   const sanitized: any = {};
   for (const key of allowedFields) {
     if (!(key in data)) continue;
@@ -79,6 +79,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     } else {
       sanitized[key] = data[key] ?? null;
     }
+  }
+
+  // Update nextOccurrence if recurrence changed
+  if ("recurrence" in sanitized) {
+    const rec = sanitized.recurrence ?? "NONE";
+    const now = new Date();
+    if (rec === "DAILY") { now.setDate(now.getDate() + 1); sanitized.nextOccurrence = now; }
+    else if (rec === "WEEKLY") { now.setDate(now.getDate() + 7); sanitized.nextOccurrence = now; }
+    else if (rec === "MONTHLY") { now.setMonth(now.getMonth() + 1); sanitized.nextOccurrence = now; }
+    else sanitized.nextOccurrence = null;
   }
 
   // Registrar historial de cambios
