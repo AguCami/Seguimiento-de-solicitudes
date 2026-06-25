@@ -7,7 +7,7 @@ import { PriorityBadge } from "@/components/PriorityBadge";
 
 function buildWhere(userId: string, role: string, sector?: string) {
   const where: any = {};
-  if (role === "SOLICITANTE" || role === "EDITOR") {
+  if (role === "SOLICITANTE" || role === "EDITOR" || role === "GESTOR") {
     where.OR = [{ createdById: userId }, { collaborators: { some: { userId } } }];
   }
   if (role === "RESPONSABLE" && sector) where.sector = { name: sector };
