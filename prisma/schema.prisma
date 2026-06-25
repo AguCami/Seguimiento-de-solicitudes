@@ -14,6 +14,7 @@ model User {
   password  String
   role      String   @default("SOLICITANTE")
   sector    String?
+  avatarUrl String?
   createdAt DateTime @default(now())
 
   requestsCreated  Request[]             @relation("CreatedBy")
@@ -77,8 +78,21 @@ model Comment {
   requestId String
   request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id])
+  authorId    String
+  author      User                @relation(fields: [authorId], references: [id])
+  attachments CommentAttachment[]
+}
+
+model CommentAttachment {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  type      String
+  size      Int
+  createdAt DateTime @default(now())
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
 }
 
 model RequestHistory {

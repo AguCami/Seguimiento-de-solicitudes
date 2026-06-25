@@ -11,14 +11,28 @@ import { RequestsSkeleton } from "@/components/RequestsSkeleton";
 
 const PAGE_SIZE = 10;
 
+const PRIORITY_ORDER: Record<string, number> = { ALTA: 0, MEDIA: 1, BAJA: 2 };
+const FINALIZED = new Set(["RESUELTO", "CANCELADO"]);
+
+function sortRequests(requests: any[]) {
+  return [...requests].sort((a, b) => {
+    const aFin = FINALIZED.has(a.status);
+    const bFin = FINALIZED.has(b.status);
+    if (aFin !== bFin) return aFin ? 1 : -1;
+    const pDiff = (PRIORITY_ORDER[a.priority] ?? 1) - (PRIORITY_ORDER[b.priority] ?? 1);
+    if (pDiff !== 0) return pDiff;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+}
+
 export default async function RequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; sectorId?: string; q?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; sectorId?: string; q?: string; page?: string; dateFrom?: string; dateTo?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   const user = session!.user as any;
-  const { status, sectorId, q, page: pageParam } = await searchParams;
+  const { status, sectorId, q, page: pageParam, dateFrom, dateTo } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
 
   const where: any = {};
@@ -43,7 +57,15 @@ export default async function RequestsPage({
     }
   }
 
-  const [requests, total, sectors] = await Promise.all([
+  // Date range filter
+  if (dateFrom || dateTo) {
+    const dateFilter: any = {};
+    if (dateFrom) dateFilter.gte = new Date(dateFrom);
+    if (dateTo) { const d = new Date(dateTo); d.setHours(23, 59, 59, 999); dateFilter.lte = d; }
+    where.createdAt = dateFilter;
+  }
+
+  const [allRequests, sectors] = await Promise.all([
     prisma.request.findMany({
       where,
       include: {
@@ -51,13 +73,13 @@ export default async function RequestsPage({
         createdBy: { select: { name: true } },
         _count: { select: { comments: true } },
       },
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
     }),
-    prisma.request.count({ where }),
     prisma.sector.findMany({ orderBy: { name: "asc" } }),
   ]);
+
+  const sorted = sortRequests(allRequests);
+  const total = sorted.length;
+  const requests = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
@@ -66,6 +88,8 @@ export default async function RequestsPage({
     if (status) params.set("status", status);
     if (sectorId) params.set("sectorId", sectorId);
     if (q) params.set("q", q);
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    if (dateTo) params.set("dateTo", dateTo);
     if (p > 1) params.set("page", String(p));
     const qs = params.toString();
     return `/dashboard/requests${qs ? `?${qs}` : ""}`;
@@ -86,6 +110,9 @@ export default async function RequestsPage({
       <Suspense fallback={<RequestsSkeleton />}>
         <RequestFilters sectors={sectors} isAdmin={user.role === "ADMIN"} />
       </Suspense>
+      <p className="text-xs text-white/40 mb-3 -mt-3 px-1">
+        {total} solicitud{total !== 1 ? "es" : ""} · activas primero por prioridad
+      </p>
 
       {/* Desktop table */}
       <div style={{

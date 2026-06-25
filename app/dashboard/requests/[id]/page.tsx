@@ -29,7 +29,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
     include: {
       createdBy: { select: { name: true, email: true } },
       sector: true,
-      comments: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } },
+      comments: { include: { author: { select: { name: true, role: true } }, attachments: true }, orderBy: { createdAt: "asc" } },
       history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
       attachments: { orderBy: { createdAt: "asc" } },
       collaborators: { include: { user: { select: { id: true, name: true } } }, orderBy: { createdAt: "asc" } },
@@ -129,8 +129,20 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                   <span className="text-sm font-medium text-white">{c.author.name}</span>
                   <span className="text-xs text-white/45">{new Date(c.createdAt).toLocaleString("es-AR")}</span>
                 </div>
-                <p style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)" }}
-                  className="text-sm text-white/85 rounded-xl p-3">{c.content}</p>
+                {c.content && (
+                  <p style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)" }}
+                    className="text-sm text-white/85 rounded-xl p-3">{c.content}</p>
+                )}
+                {(c as any).attachments?.map((a: any) => (
+                  <a key={a.id} href={a.url} target="_blank" rel="noopener noreferrer"
+                    style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.35)" }}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 mt-1 hover:opacity-80 transition">
+                    <svg width="13" height="13" fill="none" stroke="rgba(165,180,252,0.9)" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                    </svg>
+                    <span className="text-xs text-indigo-200 underline underline-offset-2 truncate">{a.name}</span>
+                  </a>
+                ))}
               </div>
             </div>
           ))}
@@ -147,10 +159,19 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 <div style={{ background: "rgba(99,102,241,0.6)" }} className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" />
                 <div className="flex-1">
                   <span className="font-medium text-white">{h.user.name}</span>
-                  <span className="text-white/60"> cambió </span>
-                  <span className="font-medium text-white">{h.field}</span>
-                  {h.oldValue && <span className="text-white/60"> de <span className="line-through text-white/40">{h.oldValue}</span></span>}
-                  {h.newValue && <span className="text-white/60"> a <span className="text-white/85">{h.newValue}</span></span>}
+                  {h.field === "comentario" ? (
+                    <>
+                      <span className="text-white/60"> comentó: </span>
+                      <span className="text-white/85 italic">{h.newValue}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-white/60"> cambió </span>
+                      <span className="font-medium text-white">{h.field}</span>
+                      {h.oldValue && <span className="text-white/60"> de <span className="line-through text-white/40">{h.oldValue}</span></span>}
+                      {h.newValue && <span className="text-white/60"> a <span className="text-white/85">{h.newValue}</span></span>}
+                    </>
+                  )}
                   <span className="text-xs text-white/40 ml-2">{new Date(h.createdAt).toLocaleString("es-AR")}</span>
                 </div>
               </div>

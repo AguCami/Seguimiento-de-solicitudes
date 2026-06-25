@@ -166,6 +166,12 @@ input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
 
+/* Status badge appear animation */
+@keyframes statusAppear {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
 /* Easter egg gear spin */
 @keyframes gearSpin {
   from { transform: rotate(0deg); }

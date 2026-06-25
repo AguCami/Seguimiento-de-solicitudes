@@ -8,7 +8,7 @@ const config: Record<string, { label: string; bg: string; border: string }> = {
 export function StatusBadge({ status }: { status: string }) {
   const c = config[status] ?? { label: status, bg: "rgba(156,163,175,0.45)", border: "rgba(156,163,175,0.7)" };
   return (
-    <span style={{
+    <span key={status} style={{
       background: c.bg,
       border: `1px solid ${c.border}`,
       backdropFilter: "blur(8px)",
@@ -23,6 +23,7 @@ export function StatusBadge({ status }: { status: string }) {
       display: "inline-flex",
       alignItems: "center",
       whiteSpace: "nowrap" as const,
+      animation: "statusAppear 0.35s cubic-bezier(0.34,1.56,0.64,1) both",
     }}>
       {c.label}
     </span>

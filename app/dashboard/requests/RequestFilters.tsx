@@ -9,6 +9,17 @@ const statusLabel: Record<string, string> = {
   PENDIENTE: "Pendiente", EN_PROGRESO: "En progreso", RESUELTO: "Resuelto", CANCELADO: "Cancelado",
 };
 
+const inputStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.12)",
+  border: "1px solid rgba(255,255,255,0.25)",
+  borderRadius: "10px",
+  padding: "6px 10px",
+  fontSize: "13px",
+  color: "white",
+  outline: "none",
+  colorScheme: "dark",
+};
+
 export function RequestFilters({ sectors, isAdmin }: { sectors: Sector[]; isAdmin: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,7 +42,10 @@ export function RequestFilters({ sectors, isAdmin }: { sectors: Sector[]; isAdmi
     startTransition(() => router.push("/dashboard/requests"));
   }
 
-  const hasFilters = !!(searchParams.get("status") || searchParams.get("sectorId") || searchParams.get("q"));
+  const hasFilters = !!(
+    searchParams.get("status") || searchParams.get("sectorId") ||
+    searchParams.get("q") || searchParams.get("dateFrom") || searchParams.get("dateTo")
+  );
 
   return (
     <div style={{
@@ -40,6 +54,7 @@ export function RequestFilters({ sectors, isAdmin }: { sectors: Sector[]; isAdmi
       WebkitBackdropFilter: "blur(16px)",
       border: "1px solid rgba(255,255,255,0.25)",
     }} className="rounded-2xl p-4 mb-5 flex flex-wrap gap-3 items-end">
+
       {/* Search */}
       <div className="flex-1 min-w-[180px]">
         <label className="block text-xs text-white/60 mb-1 font-medium">Buscar</label>
@@ -86,6 +101,26 @@ export function RequestFilters({ sectors, isAdmin }: { sectors: Sector[]; isAdmi
           </select>
         </div>
       )}
+
+      {/* Date range */}
+      <div>
+        <label className="block text-xs text-white/60 mb-1 font-medium">Desde</label>
+        <input
+          type="date"
+          value={searchParams.get("dateFrom") ?? ""}
+          onChange={(e) => update("dateFrom", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
+      <div>
+        <label className="block text-xs text-white/60 mb-1 font-medium">Hasta</label>
+        <input
+          type="date"
+          value={searchParams.get("dateTo") ?? ""}
+          onChange={(e) => update("dateTo", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
       {/* Clear */}
       {hasFilters && (
