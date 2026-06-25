@@ -63,7 +63,11 @@ export function EditRequestModal({ request, onClose }: { request: Request; onClo
     });
     setLoading(false);
     if (res.ok) { router.refresh(); onClose(); }
-    else { setError("Error al guardar los cambios"); }
+    else {
+      let msg = "Error al guardar los cambios";
+      try { const d = await res.json(); msg = d.error ?? msg; } catch {}
+      setError(`${res.status}: ${msg}`);
+    }
   }
 
   const modal = (

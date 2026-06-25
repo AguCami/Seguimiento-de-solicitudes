@@ -46,6 +46,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!current) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   const isOwner = user.id === current.createdById;
+  console.log("[PATCH request] userId:", user.id, "role:", user.role, "createdById:", current.createdById, "isOwner:", isOwner);
 
   // Permission checks
   if (!isOwner && user.role === "SOLICITANTE") {
