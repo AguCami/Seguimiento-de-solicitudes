@@ -7,7 +7,7 @@ import { PriorityBadge } from "@/components/PriorityBadge";
 
 async function getStats(userId: string, role: string, sector?: string) {
   const where: any = {};
-  if (role === "SOLICITANTE") where.createdById = userId;
+  if (role === "SOLICITANTE" || role === "EDITOR") where.createdById = userId;
   if (role === "RESPONSABLE" && sector) where.sector = { name: sector };
 
   const [total, pendiente, en_progreso, resuelto] = await Promise.all([
@@ -21,7 +21,7 @@ async function getStats(userId: string, role: string, sector?: string) {
 
 async function getRecentRequests(userId: string, role: string, sector?: string) {
   const where: any = {};
-  if (role === "SOLICITANTE") where.createdById = userId;
+  if (role === "SOLICITANTE" || role === "EDITOR") where.createdById = userId;
   if (role === "RESPONSABLE" && sector) where.sector = { name: sector };
 
   return prisma.request.findMany({
