@@ -84,7 +84,7 @@ export default function NewRequestPage() {
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.3)",
-        boxShadow: "0 8px 32px rgba(31,38,135,0.15), inset 0 1px 0 rgba(255,255,255,0.4)",
+        boxShadow: "0 8px 32px rgba(var(--a2),0.15), inset 0 1px 0 rgba(255,255,255,0.4)",
       }} className="rounded-2xl p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>

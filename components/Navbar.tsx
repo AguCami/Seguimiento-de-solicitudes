@@ -60,7 +60,7 @@ export function Navbar() {
     backdropFilter: "blur(20px) saturate(180%)",
     WebkitBackdropFilter: "blur(20px) saturate(180%)",
     borderBottom: "1px solid rgba(255,255,255,0.25)",
-    boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+    boxShadow: "0 4px 24px rgba(var(--a2),0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
   };
 
   return (

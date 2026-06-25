@@ -98,7 +98,7 @@ export function CommentBox({ requestId }: { requestId: string }) {
             <div style={{
               position: "absolute", bottom: "100%", left: 0, right: 0, marginBottom: 4,
               background: "rgba(20,18,60,0.95)", backdropFilter: "blur(20px)",
-              border: "1px solid rgba(99,102,241,0.5)", borderRadius: 12,
+              border: "1px solid rgba(var(--a1),0.5)", borderRadius: 12,
               boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
               overflow: "hidden", zIndex: 50,
             }}>
@@ -109,13 +109,13 @@ export function CommentBox({ requestId }: { requestId: string }) {
                   onClick={() => insertMention(u)}
                   style={{
                     width: "100%", textAlign: "left", padding: "8px 14px",
-                    background: i === mentionIndex ? "rgba(99,102,241,0.3)" : "transparent",
+                    background: i === mentionIndex ? "rgba(var(--a1),0.3)" : "transparent",
                     border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 8,
                   }}
                 >
                   <div style={{
                     width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
-                    background: "rgba(99,102,241,0.5)", display: "flex", alignItems: "center",
+                    background: "rgba(var(--a1),0.5)", display: "flex", alignItems: "center",
                     justifyContent: "center", fontSize: 11, fontWeight: 700, color: "white",
                   }}>
                     {u.name[0].toUpperCase()}
@@ -131,8 +131,8 @@ export function CommentBox({ requestId }: { requestId: string }) {
 
         {/* Attach file */}
         <label title="Adjuntar archivo" style={{
-          background: file ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.12)",
-          border: `1px solid ${file ? "rgba(99,102,241,0.6)" : "rgba(255,255,255,0.25)"}`,
+          background: file ? "rgba(var(--a1),0.3)" : "rgba(255,255,255,0.12)",
+          border: `1px solid ${file ? "rgba(var(--a1),0.6)" : "rgba(255,255,255,0.25)"}`,
           borderRadius: "12px", width: "40px", height: "40px",
           display: "flex", alignItems: "center", justifyContent: "center",
           cursor: "pointer", flexShrink: 0, transition: "all 0.15s",
@@ -155,7 +155,7 @@ export function CommentBox({ requestId }: { requestId: string }) {
 
       {/* File preview chip */}
       {file && (
-        <div style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.35)", borderRadius: "10px" }}
+        <div style={{ background: "rgba(var(--a1),0.15)", border: "1px solid rgba(var(--a1),0.35)", borderRadius: "10px" }}
           className="flex items-center gap-2 px-3 py-2">
           <svg width="13" height="13" fill="none" stroke="rgba(165,180,252,0.9)" strokeWidth="2" viewBox="0 0 24 24">
             <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />

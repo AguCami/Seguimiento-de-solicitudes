@@ -121,7 +121,7 @@ export default async function RequestsPage({
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.3)",
-        boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+        boxShadow: "0 4px 24px rgba(var(--a2),0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
       }} className="hidden md:block rounded-2xl overflow-hidden">
         <table className="min-w-full">
           <thead>
@@ -159,7 +159,7 @@ export default async function RequestsPage({
                     return (
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <div style={{ flex: 1, background: "rgba(255,255,255,0.1)", borderRadius: 999, height: 5, minWidth: 48 }}>
-                          <div style={{ height: "100%", borderRadius: 999, width: `${pct}%`, background: done === total ? "rgba(34,197,94,0.7)" : "rgba(99,102,241,0.7)", transition: "width 0.3s" }} />
+                          <div style={{ height: "100%", borderRadius: 999, width: `${pct}%`, background: done === total ? "rgba(34,197,94,0.7)" : "rgba(var(--a1),0.7)", transition: "width 0.3s" }} />
                         </div>
                         <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>{done}/{total}</span>
                       </div>
@@ -189,7 +189,7 @@ export default async function RequestsPage({
               backdropFilter: "blur(20px) saturate(180%)",
               WebkitBackdropFilter: "blur(20px) saturate(180%)",
               border: "1px solid rgba(255,255,255,0.3)",
-              boxShadow: "0 2px 12px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.35)",
+              boxShadow: "0 2px 12px rgba(var(--a2),0.1), inset 0 1px 0 rgba(255,255,255,0.35)",
               animationDelay: `${i * 50}ms`,
             }}>
             <div className="flex items-start justify-between gap-2 mb-2">
@@ -203,7 +203,7 @@ export default async function RequestsPage({
                 {r.sector.name}
               </span>
               {(r as any).requestedTo && (
-                <span style={{ background: "rgba(99,102,241,0.25)", border: "1px solid rgba(99,102,241,0.4)" }}
+                <span style={{ background: "rgba(var(--a1),0.25)", border: "1px solid rgba(var(--a1),0.4)" }}
                   className="text-xs text-indigo-200 font-medium px-2 py-0.5 rounded-full">
                   → {(r as any).requestedTo}
                 </span>
@@ -215,7 +215,7 @@ export default async function RequestsPage({
               return (
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
                   <div style={{ flex: 1, background: "rgba(255,255,255,0.1)", borderRadius: 999, height: 4 }}>
-                    <div style={{ height: "100%", borderRadius: 999, width: `${Math.round((done/total)*100)}%`, background: done === total ? "rgba(34,197,94,0.7)" : "rgba(99,102,241,0.7)" }} />
+                    <div style={{ height: "100%", borderRadius: 999, width: `${Math.round((done/total)*100)}%`, background: done === total ? "rgba(34,197,94,0.7)" : "rgba(var(--a1),0.7)" }} />
                   </div>
                   <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{done}/{total} subtareas</span>
                 </div>
@@ -260,8 +260,8 @@ export default async function RequestsPage({
                     <span key={`ellipsis-${i}`} className="text-white/40 px-1 text-sm">…</span>
                   ) : (
                     <Link key={p} href={buildPageUrl(p as number)} style={{
-                      background: p === page ? "rgba(102,126,234,0.7)" : "rgba(255,255,255,0.12)",
-                      border: `1px solid ${p === page ? "rgba(102,126,234,0.9)" : "rgba(255,255,255,0.2)"}`,
+                      background: p === page ? "rgba(var(--a1),0.7)" : "rgba(255,255,255,0.12)",
+                      border: `1px solid ${p === page ? "rgba(var(--a1),0.9)" : "rgba(255,255,255,0.2)"}`,
                       borderRadius: "8px", padding: "5px 10px", color: "white",
                       fontSize: "13px", fontWeight: p === page ? 700 : 500, minWidth: "32px", textAlign: "center",
                     }}>

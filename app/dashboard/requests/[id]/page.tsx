@@ -19,7 +19,7 @@ const glassCard = {
   backdropFilter: "blur(20px) saturate(180%)",
   WebkitBackdropFilter: "blur(20px) saturate(180%)",
   border: "1px solid rgba(255,255,255,0.3)",
-  boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+  boxShadow: "0 4px 24px rgba(var(--a2),0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
 } as React.CSSProperties;
 
 export default async function RequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -89,9 +89,9 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
             <div className="flex flex-wrap items-center gap-2 mt-2">
               <span className="text-xs text-white/45">Compartido con:</span>
               {(request as any).collaborators.map((c: any) => (
-                <span key={c.user.id} style={{ background: "rgba(99,102,241,0.25)", border: "1px solid rgba(99,102,241,0.4)" }}
+                <span key={c.user.id} style={{ background: "rgba(var(--a1),0.25)", border: "1px solid rgba(var(--a1),0.4)" }}
                   className="flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs text-white/80">
-                  <span style={{ background: "rgba(99,102,241,0.6)" }} className="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[9px]">
+                  <span style={{ background: "rgba(var(--a1),0.6)" }} className="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[9px]">
                     {c.user.name[0].toUpperCase()}
                   </span>
                   {c.user.name}
@@ -140,7 +140,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           {request.comments.length === 0 && <p className="text-white/50 text-sm">No hay comentarios todavía</p>}
           {request.comments.map((c) => (
             <div key={c.id} className="flex gap-3">
-              <div style={{ background: "rgba(99,102,241,0.4)", border: "1px solid rgba(255,255,255,0.3)" }}
+              <div style={{ background: "rgba(var(--a1),0.4)", border: "1px solid rgba(255,255,255,0.3)" }}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium text-sm flex-shrink-0">
                 {c.author.name[0].toUpperCase()}
               </div>
@@ -155,7 +155,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 )}
                 {(c as any).attachments?.map((a: any) => (
                   <a key={a.id} href={a.url} target="_blank" rel="noopener noreferrer"
-                    style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.35)" }}
+                    style={{ background: "rgba(var(--a1),0.15)", border: "1px solid rgba(var(--a1),0.35)" }}
                     className="flex items-center gap-2 rounded-xl px-3 py-2 mt-1 hover:opacity-80 transition">
                     <svg width="13" height="13" fill="none" stroke="rgba(165,180,252,0.9)" strokeWidth="2" viewBox="0 0 24 24">
                       <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
@@ -176,7 +176,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <div className="space-y-2">
             {request.history.map((h) => (
               <div key={h.id} className="flex items-start gap-3 text-sm">
-                <div style={{ background: "rgba(99,102,241,0.6)" }} className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" />
+                <div style={{ background: "rgba(var(--a1),0.6)" }} className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" />
                 <div className="flex-1">
                   <span className="font-medium text-white">{h.user.name}</span>
                   {h.field === "comentario" ? (

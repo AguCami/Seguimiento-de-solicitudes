@@ -38,9 +38,9 @@ async function getRecentRequests(userId: string, role: string, sector?: string) 
 }
 
 const cardStyles = [
-  { icon: "◈", gradient: "linear-gradient(135deg, rgba(99,102,241,0.6), rgba(139,92,246,0.6))" },
+  { icon: "◈", gradient: "linear-gradient(135deg, rgba(var(--a1),0.6), rgba(var(--a2),0.6))" },
   { icon: "◉", gradient: "linear-gradient(135deg, rgba(251,191,36,0.6), rgba(245,158,11,0.6))" },
-  { icon: "◎", gradient: "linear-gradient(135deg, rgba(99,102,241,0.5), rgba(168,85,247,0.5))" },
+  { icon: "◎", gradient: "linear-gradient(135deg, rgba(var(--a1),0.5), rgba(168,85,247,0.5))" },
   { icon: "◍", gradient: "linear-gradient(135deg, rgba(52,211,153,0.6), rgba(16,185,129,0.6))" },
 ];
 
@@ -76,7 +76,7 @@ export default async function DashboardPage() {
             backdropFilter: "blur(20px) saturate(180%)",
             WebkitBackdropFilter: "blur(20px) saturate(180%)",
             border: "1px solid rgba(255,255,255,0.3)",
-            boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+            boxShadow: "0 4px 24px rgba(var(--a2),0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
           }} className="rounded-2xl p-5">
             <div style={{ background: c.gradient, backdropFilter: "blur(10px)" }}
               className="inline-flex w-10 h-10 rounded-xl items-center justify-center mb-3 shadow-md">
@@ -92,7 +92,7 @@ export default async function DashboardPage() {
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
         border: "1px solid rgba(255,255,255,0.3)",
-        boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+        boxShadow: "0 4px 24px rgba(var(--a2),0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
       }} className="rounded-2xl overflow-hidden">
         <div style={{ borderBottom: "1px solid rgba(255,255,255,0.2)" }} className="px-6 py-4 flex items-center justify-between">
           <h2 className="font-semibold text-white">Solicitudes recientes</h2>

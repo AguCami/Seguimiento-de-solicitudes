@@ -105,7 +105,7 @@ export function ShareRequestModal({
                 {collabs.map(c => (
                   <div key={c.user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "12px", padding: "8px 14px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "rgba(102,126,234,0.5)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, color: "white" }}>
+                      <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "rgba(var(--a1),0.5)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, color: "white" }}>
                         {c.user.name[0].toUpperCase()}
                       </div>
                       <span style={{ fontSize: "14px", color: "white", fontWeight: 500 }}>{c.user.name}</span>
@@ -141,7 +141,7 @@ export function ShareRequestModal({
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.18)"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)"; }}
                   >
-                    <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "rgba(102,126,234,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, color: "white", flexShrink: 0 }}>
+                    <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "rgba(var(--a1),0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, color: "white", flexShrink: 0 }}>
                       {u.name[0].toUpperCase()}
                     </div>
                     <div style={{ flex: 1 }}>

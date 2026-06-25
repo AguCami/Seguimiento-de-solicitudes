@@ -65,7 +65,7 @@ export function SubTasksBox({ requestId, subtasks, canManage }: {
       backdropFilter: "blur(20px) saturate(180%)",
       WebkitBackdropFilter: "blur(20px) saturate(180%)",
       border: "1px solid rgba(255,255,255,0.3)",
-      boxShadow: "0 4px 24px rgba(31,38,135,0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
+      boxShadow: "0 4px 24px rgba(var(--a2),0.1), inset 0 1px 0 rgba(255,255,255,0.4)",
     }} className="rounded-2xl p-6 card-enter">
 
       {/* Header */}
@@ -74,8 +74,8 @@ export function SubTasksBox({ requestId, subtasks, canManage }: {
           <h2 className="font-semibold text-white">Subtareas</h2>
           {total > 0 && (
             <span style={{
-              background: allDone ? "rgba(34,197,94,0.25)" : "rgba(99,102,241,0.25)",
-              border: `1px solid ${allDone ? "rgba(34,197,94,0.5)" : "rgba(99,102,241,0.4)"}`,
+              background: allDone ? "rgba(34,197,94,0.25)" : "rgba(var(--a1),0.25)",
+              border: `1px solid ${allDone ? "rgba(34,197,94,0.5)" : "rgba(var(--a1),0.4)"}`,
               borderRadius: "999px", padding: "1px 8px", fontSize: "11px", fontWeight: 700,
               color: allDone ? "rgba(134,239,172,0.95)" : "rgba(165,180,252,0.95)",
             }}>
@@ -85,7 +85,7 @@ export function SubTasksBox({ requestId, subtasks, canManage }: {
         </div>
         {canManage && (
           <button onClick={() => setShowInput(v => !v)} style={{
-            background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.4)",
+            background: "rgba(var(--a1),0.2)", border: "1px solid rgba(var(--a1),0.4)",
             borderRadius: "10px", padding: "4px 12px", color: "rgba(165,180,252,0.9)",
             fontSize: "12px", fontWeight: 600, cursor: "pointer",
           }}>
@@ -102,7 +102,7 @@ export function SubTasksBox({ requestId, subtasks, canManage }: {
             width: `${progress}%`,
             background: allDone
               ? "linear-gradient(90deg, rgba(34,197,94,0.8), rgba(16,185,129,0.8))"
-              : "linear-gradient(90deg, rgba(99,102,241,0.8), rgba(139,92,246,0.8))",
+              : "linear-gradient(90deg, rgba(var(--a1),0.8), rgba(var(--a2),0.8))",
             transition: "width 0.4s ease",
           }} />
         </div>
@@ -119,7 +119,7 @@ export function SubTasksBox({ requestId, subtasks, canManage }: {
             className="glass-input flex-1 px-3 py-2 text-sm"
           />
           <button type="submit" disabled={adding || !newTitle.trim()} style={{
-            background: "rgba(99,102,241,0.7)", border: "1px solid rgba(99,102,241,0.9)",
+            background: "rgba(var(--a1),0.7)", border: "1px solid rgba(var(--a1),0.9)",
             borderRadius: "10px", padding: "6px 14px", color: "white",
             fontSize: "13px", fontWeight: 600, cursor: "pointer", opacity: !newTitle.trim() ? 0.5 : 1,
           }}>
