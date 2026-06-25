@@ -47,11 +47,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const isOwner = user.id === current.createdById;
 
+  // Permission checks
+  if (!isOwner && user.role === "SOLICITANTE") {
+    return NextResponse.json({ error: "Sin permisos para editar solicitudes ajenas" }, { status: 403 });
+  }
+  if (!isOwner && user.role === "EDITOR") {
+    return NextResponse.json({ error: "Sin permisos para editar solicitudes ajenas" }, { status: 403 });
+  }
   if (data.status && user.role === "SOLICITANTE") {
     return NextResponse.json({ error: "Sin permisos para cambiar estado" }, { status: 403 });
-  }
-  if (data.status && user.role === "EDITOR" && !isOwner) {
-    return NextResponse.json({ error: "Sin permisos para cambiar estado de solicitudes ajenas" }, { status: 403 });
   }
 
   // Block RESUELTO if there are pending subtasks
@@ -64,22 +68,40 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
   }
 
-  // Registrar historial de cambios
-  const historyEntries = [];
-  for (const key of Object.keys(data)) {
-    const oldVal = (current as any)[key];
-    const newVal = data[key];
-    if (oldVal !== newVal && fieldLabels[key]) {
-      historyEntries.push({ field: fieldLabels[key], oldValue: oldVal ? String(oldVal) : null, newValue: newVal ? String(newVal) : null, requestId: id, userId: user.id });
+  // Sanitize: only allow known fields and convert dates properly
+  const allowedFields = ["title", "description", "requestedTo", "sectorId", "priority", "status", "startDate", "endDate"];
+  const sanitized: any = {};
+  for (const key of allowedFields) {
+    if (!(key in data)) continue;
+    if ((key === "startDate" || key === "endDate") && data[key]) {
+      sanitized[key] = new Date(data[key]);
+    } else {
+      sanitized[key] = data[key] ?? null;
     }
   }
 
-  const [updated] = await prisma.$transaction([
-    prisma.request.update({ where: { id }, data, include: { sector: true, createdBy: { select: { name: true } } } }),
-    ...historyEntries.map((h) => prisma.requestHistory.create({ data: h })),
-  ]);
+  // Registrar historial de cambios
+  const historyEntries = [];
+  for (const key of Object.keys(sanitized)) {
+    const oldVal = (current as any)[key];
+    const newVal = sanitized[key];
+    const oldStr = oldVal instanceof Date ? oldVal.toISOString().slice(0, 10) : oldVal ? String(oldVal) : null;
+    const newStr = newVal instanceof Date ? newVal.toISOString().slice(0, 10) : newVal ? String(newVal) : null;
+    if (oldStr !== newStr && fieldLabels[key]) {
+      historyEntries.push({ field: fieldLabels[key], oldValue: oldStr, newValue: newStr, requestId: id, userId: user.id });
+    }
+  }
 
-  return NextResponse.json(updated);
+  try {
+    const [updated] = await prisma.$transaction([
+      prisma.request.update({ where: { id }, data: sanitized, include: { sector: true, createdBy: { select: { name: true } } } }),
+      ...historyEntries.map((h) => prisma.requestHistory.create({ data: h })),
+    ]);
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error("PATCH /api/requests/[id] error:", err);
+    return NextResponse.json({ error: "Error al guardar los cambios" }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
