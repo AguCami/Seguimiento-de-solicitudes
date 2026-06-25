@@ -5,10 +5,17 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/StatusBadge";
 import { PriorityBadge } from "@/components/PriorityBadge";
 
-async function getStats(userId: string, role: string, sector?: string) {
+function buildWhere(userId: string, role: string, sector?: string) {
   const where: any = {};
-  if (role === "SOLICITANTE" || role === "EDITOR") where.createdById = userId;
+  if (role === "SOLICITANTE" || role === "EDITOR") {
+    where.OR = [{ createdById: userId }, { collaborators: { some: { userId } } }];
+  }
   if (role === "RESPONSABLE" && sector) where.sector = { name: sector };
+  return where;
+}
+
+async function getStats(userId: string, role: string, sector?: string) {
+  const where = buildWhere(userId, role, sector);
 
   const [total, pendiente, en_progreso, resuelto] = await Promise.all([
     prisma.request.count({ where }),
@@ -20,9 +27,7 @@ async function getStats(userId: string, role: string, sector?: string) {
 }
 
 async function getRecentRequests(userId: string, role: string, sector?: string) {
-  const where: any = {};
-  if (role === "SOLICITANTE" || role === "EDITOR") where.createdById = userId;
-  if (role === "RESPONSABLE" && sector) where.sector = { name: sector };
+  const where = buildWhere(userId, role, sector);
 
   return prisma.request.findMany({
     where,

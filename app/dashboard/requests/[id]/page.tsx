@@ -9,6 +9,7 @@ import { CommentBox } from "./CommentBox";
 import { AttachmentsBox } from "./AttachmentsBox";
 import { EditRequestButton } from "./EditRequestButton";
 import { DeleteRequestButton } from "./DeleteRequestButton";
+import { ShareRequestButton } from "./ShareRequestButton";
 
 const glassCard = {
   background: "rgba(255,255,255,0.15)",
@@ -31,12 +32,15 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
       comments: { include: { author: { select: { name: true, role: true } } }, orderBy: { createdAt: "asc" } },
       history: { include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
       attachments: { orderBy: { createdAt: "asc" } },
+      collaborators: { include: { user: { select: { id: true, name: true } } }, orderBy: { createdAt: "asc" } },
     },
   });
 
   if (!request) notFound();
 
   const isOwner = user.id === (request as any).createdById;
+  const isCollaborator = (request as any).collaborators.some((c: any) => c.user.id === user.id);
+  if (!isOwner && !isCollaborator && user.role !== "ADMIN" && user.role !== "RESPONSABLE" && user.role !== "EDITOR") notFound();
   const canEdit = user.role === "ADMIN" || isOwner;
   const canManage = user.role === "RESPONSABLE" || user.role === "ADMIN" || (user.role === "EDITOR" && isOwner);
 
@@ -47,6 +51,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <div className="flex items-start justify-between gap-2 mb-2">
             <h1 className="text-xl font-bold text-white flex-1 min-w-0">{request.title}</h1>
             <div className="flex items-center gap-2 flex-shrink-0">
+              {canEdit && <ShareRequestButton requestId={id} collaborators={(request as any).collaborators} />}
               {canEdit && <DeleteRequestButton requestId={id} />}
               {canEdit && (
               <EditRequestButton request={{
@@ -73,6 +78,20 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
             <p className="text-sm text-white/70 mt-1">
               <span className="text-white/45">Solicitado a:</span> {(request as any).requestedTo}
             </p>
+          )}
+          {(request as any).collaborators.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <span className="text-xs text-white/45">Compartido con:</span>
+              {(request as any).collaborators.map((c: any) => (
+                <span key={c.user.id} style={{ background: "rgba(99,102,241,0.25)", border: "1px solid rgba(99,102,241,0.4)" }}
+                  className="flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs text-white/80">
+                  <span style={{ background: "rgba(99,102,241,0.6)" }} className="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[9px]">
+                    {c.user.name[0].toUpperCase()}
+                  </span>
+                  {c.user.name}
+                </span>
+              ))}
+            </div>
           )}
           {(request.startDate || request.endDate) && (
             <p className="text-xs text-white/45 mt-1">

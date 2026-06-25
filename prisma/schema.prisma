@@ -16,11 +16,12 @@ model User {
   sector    String?
   createdAt DateTime @default(now())
 
-  requestsCreated  Request[]       @relation("CreatedBy")
+  requestsCreated  Request[]             @relation("CreatedBy")
   comments         Comment[]
   history          RequestHistory[]
-  messagesSent     DirectMessage[] @relation("MessagesSent")
-  messagesReceived DirectMessage[] @relation("MessagesReceived")
+  messagesSent     DirectMessage[]       @relation("MessagesSent")
+  messagesReceived DirectMessage[]       @relation("MessagesReceived")
+  sharedRequests   RequestCollaborator[]
 }
 
 model Sector {
@@ -49,9 +50,23 @@ model Request {
   sectorId String
   sector   Sector @relation(fields: [sectorId], references: [id])
 
-  comments    Comment[]
-  history     RequestHistory[]
-  attachments Attachment[]
+  comments      Comment[]
+  history       RequestHistory[]
+  attachments   Attachment[]
+  collaborators RequestCollaborator[]
+}
+
+model RequestCollaborator {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([requestId, userId])
 }
 
 model Comment {

@@ -24,12 +24,24 @@ export default async function RequestsPage({
   const where: any = {};
   if (status) where.status = status;
   if (sectorId) where.sectorId = sectorId;
-  if (user.role === "SOLICITANTE" || user.role === "EDITOR") where.createdById = user.id;
+  if (user.role === "SOLICITANTE" || user.role === "EDITOR") {
+    where.OR = [
+      { createdById: user.id },
+      { collaborators: { some: { userId: user.id } } },
+    ];
+  }
   if (user.role === "RESPONSABLE" && user.sector) where.sector = { name: user.sector };
-  if (q) where.OR = [
-    { title: { contains: q, mode: "insensitive" } },
-    { description: { contains: q, mode: "insensitive" } },
-  ];
+  if (q) {
+    const qFilter = [
+      { title: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+    ];
+    where.AND = [{ OR: qFilter }];
+    delete where.OR;
+    if (user.role === "SOLICITANTE" || user.role === "EDITOR") {
+      where.AND.push({ OR: [{ createdById: user.id }, { collaborators: { some: { userId: user.id } } }] });
+    }
+  }
 
   const [requests, total, sectors] = await Promise.all([
     prisma.request.findMany({
