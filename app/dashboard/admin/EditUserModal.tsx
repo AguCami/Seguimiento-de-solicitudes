@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
-type User = { id: string; name: string; email: string; role: string; sector: string | null };
+type User = { id: string; name: string; email: string; role: string; sector: string | null; avatarUrl: string | null };
 type Sector = { id: string; name: string };
 
 const inputCls = "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-gray-50";
@@ -16,9 +16,12 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
   const [role, setRole] = useState(user.role);
   const [sector, setSector] = useState(user.sector ?? "");
   const [password, setPassword] = useState("");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(user.avatarUrl);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,18 +30,37 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
     return () => { document.body.style.overflow = ""; };
   }, []);
 
+  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const res = await fetch(`/api/admin/users/${user.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, role, sector: sector || undefined, password: password || undefined }),
-    });
+
+    const form = new FormData();
+    form.append("name", name);
+    form.append("email", email);
+    form.append("role", role);
+    form.append("sector", sector);
+    if (password) form.append("password", password);
+    if (avatarFile) form.append("avatar", avatarFile);
+
+    const res = await fetch(`/api/admin/users/${user.id}`, { method: "PATCH", body: form });
     setLoading(false);
-    if (res.ok) { router.refresh(); onClose(); }
-    else { const d = await res.json(); setError(d.error ?? "Error al guardar"); }
+    if (res.ok) {
+      // Invalidate navbar avatar cache for this user
+      try { sessionStorage.removeItem(`avatar_${user.id}`); } catch {}
+      router.refresh();
+      onClose();
+    } else {
+      const d = await res.json();
+      setError(d.error ?? "Error al guardar");
+    }
   }
 
   async function handleDelete() {
@@ -54,25 +76,17 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
     <div
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       style={{
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        width: "100vw", height: "100vh",
-        zIndex: 9999,
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        width: "100vw", height: "100vh", zIndex: 9999,
         background: "rgba(10,10,40,0.65)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "16px",
+        backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+        display: "flex", alignItems: "center", justifyContent: "center", padding: "16px",
       }}
     >
       <div style={{
-        background: "#fff",
-        borderRadius: "20px",
+        background: "#fff", borderRadius: "20px",
         boxShadow: "0 24px 64px rgba(31,38,135,0.3)",
-        width: "100%",
-        maxWidth: "440px",
-        maxHeight: "90vh",
-        overflowY: "auto",
+        width: "100%", maxWidth: "460px", maxHeight: "90vh", overflowY: "auto",
         border: "1px solid rgba(200,200,240,0.5)",
       }}>
         <div style={{ borderBottom: "1px solid #eef0f8", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -81,6 +95,68 @@ export function EditUserModal({ user, sectors, onClose }: { user: User; sectors:
         </div>
 
         <form onSubmit={handleSave} style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "14px" }}>
+
+          {/* Avatar */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              {avatarPreview ? (
+                <img src={avatarPreview} alt={name}
+                  style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", border: "3px solid #e0e7ff" }} />
+              ) : (
+                <div style={{
+                  width: 72, height: 72, borderRadius: "50%",
+                  background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 28, fontWeight: 700, color: "white",
+                  border: "3px solid #e0e7ff",
+                }}>
+                  {name[0]?.toUpperCase()}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                style={{
+                  position: "absolute", bottom: 0, right: 0,
+                  width: 24, height: 24, borderRadius: "50%",
+                  background: "#6366f1", border: "2px solid white",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer",
+                }}
+              >
+                <svg width="11" height="11" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </button>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#374151", margin: "0 0 2px" }}>{name || "Nombre del usuario"}</p>
+              <p style={{ fontSize: 11, color: "#9ca3af", margin: "0 0 8px" }}>{email}</p>
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                style={{
+                  fontSize: 12, color: "#6366f1", background: "#eef2ff",
+                  border: "1px solid #c7d2fe", borderRadius: 8,
+                  padding: "4px 10px", cursor: "pointer", fontWeight: 600,
+                }}
+              >
+                {avatarPreview ? "Cambiar foto" : "Subir foto"}
+              </button>
+              {avatarFile && (
+                <button
+                  type="button"
+                  onClick={() => { setAvatarFile(null); setAvatarPreview(user.avatarUrl); if (fileRef.current) fileRef.current.value = ""; }}
+                  style={{ fontSize: 11, color: "#9ca3af", background: "none", border: "none", cursor: "pointer", marginLeft: 8 }}
+                >
+                  Cancelar
+                </button>
+              )}
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+          </div>
+
           <div>
             <label className={labelCls} style={labelStyle}>Nombre</label>
             <input value={name} onChange={(e) => setName(e.target.value)} required className={inputCls} />

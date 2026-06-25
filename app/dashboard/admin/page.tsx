@@ -15,7 +15,7 @@ export default async function AdminPage() {
   const isAdmin = user.role === "ADMIN" || user.role === "GESTOR";
 
   const [users, sectors] = await Promise.all([
-    isAdmin ? prisma.user.findMany({ orderBy: { createdAt: "desc" } }) : Promise.resolve([]),
+    isAdmin ? prisma.user.findMany({ orderBy: { createdAt: "desc" }, select: { id: true, name: true, email: true, role: true, sector: true, avatarUrl: true, createdAt: true } }) : Promise.resolve([]),
     prisma.sector.findMany({ orderBy: { name: "asc" } }),
   ]);
 
