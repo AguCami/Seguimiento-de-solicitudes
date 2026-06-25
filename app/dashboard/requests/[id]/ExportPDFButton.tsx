@@ -3,7 +3,7 @@
 export function ExportPDFButton({ requestId }: { requestId: string }) {
   return (
     <a
-      href={`/requests/${requestId}/print`}
+      href={`/api/print/requests/${requestId}`}
       target="_blank"
       rel="noopener noreferrer"
       title="Exportar PDF"
