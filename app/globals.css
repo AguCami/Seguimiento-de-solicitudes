@@ -161,6 +161,17 @@ body {
   50%       { opacity: 1; }
 }
 
+/* Hide number input arrows (sudoku) */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* Easter egg gear spin */
+@keyframes gearSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* Fade-in for request cards */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(10px); }

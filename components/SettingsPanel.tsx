@@ -1,12 +1,16 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { EasterEgg } from "./EasterEgg";
 
 export function SettingsPanel() {
   const [open, setOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [gearClicks, setGearClicks] = useState(0);
+  const [easterActive, setEasterActive] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -33,6 +37,28 @@ export function SettingsPanel() {
     if (open) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
+
+  function handleGearClick() {
+    setOpen(prev => !prev);
+
+    // Reset click timer: must click 10 times within 4s window
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    clickTimerRef.current = setTimeout(() => setGearClicks(0), 4000);
+
+    setGearClicks(prev => {
+      const next = prev + 1;
+      if (next >= 10) {
+        setOpen(false);
+        setEasterActive(true);
+        if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+        return 0;
+      }
+      return next;
+    });
+  }
+
+  // Spinning animation when getting close
+  const isHeating = gearClicks >= 6;
 
   const panel = open ? (
     <div ref={panelRef} style={{
@@ -81,22 +107,31 @@ export function SettingsPanel() {
           }} />
         </button>
       </div>
+
+      {/* Secret hint when heating up */}
+      {gearClicks >= 6 && (
+        <p style={{ fontSize: "10px", color: "rgba(255,200,50,0.6)", textAlign: "center", marginTop: "14px", fontStyle: "italic" }}>
+          {10 - gearClicks} más... 👀
+        </p>
+      )}
     </div>
   ) : null;
 
   return (
     <>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleGearClick}
+        data-easter-ignore="true"
         title="Configuración"
         style={{
           background: open ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.15)",
-          border: "1px solid rgba(255,255,255,0.25)",
+          border: `1px solid ${gearClicks >= 6 ? "rgba(255,200,50,0.6)" : "rgba(255,255,255,0.25)"}`,
           borderRadius: "12px",
           width: "36px", height: "36px",
           display: "flex", alignItems: "center", justifyContent: "center",
           cursor: "pointer", transition: "all 0.2s",
           color: "white",
+          animation: isHeating ? "gearSpin 0.4s linear infinite" : undefined,
         }}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -106,6 +141,7 @@ export function SettingsPanel() {
       </button>
 
       {mounted && panel && createPortal(panel, document.body)}
+      <EasterEgg active={easterActive} onReset={() => setEasterActive(false)} />
     </>
   );
 }
